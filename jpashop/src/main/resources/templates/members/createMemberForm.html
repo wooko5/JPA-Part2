@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"/>
+<style>
+    .fieldError {
+        border-color: #bd2130;
+    }
+</style>
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <form role="form" action="/members/new" th:object="${memberForm}" method="post"> <!--'th:object'는 해당 객체를 참조한다는 뜻-->
+        <div class="form-group">
+            <label th:for="name">이름</label> <!--th:field="*{name}"는 object의 property값을 참조한다는 뜻-->
+            <input type="text" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요"
+                   th:class="${#fields.hasErrors('name')}? 'form-control fieldError' : 'form-control'"> <!--name 오류(공백인 경우)면 input박스 테두리를 style에 설정한 .fieldError(빨간색)으로 변환-->
+            <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Incorrect date</p> <!--name 오류(공백인 경우)면 MemberForm에서 작성한 메시지가 생성-->
+            <!--'*{name}'으로 작성하면 자동으로 id와 name을 맞춰준다 ex) id="name" name="name"-->
+        </div>
+        <div class="form-group">
+            <label th:for="city">도시</label>
+            <input type="text" th:field="*{city}" class="form-control" placeholder="도시를 입력하세요"> <!--th:field="*{city}"는 object의 property값을 참조한다는 뜻-->
+        </div>
+        <div class="form-group">
+            <label th:for="street">거리</label>
+            <input type="text" th:field="*{street}" class="form-control" placeholder="거리를 입력하세요"> <!--th:field="*{street}"는 object의 property값을 참조한다는 뜻-->
+        </div>
+        <div class="form-group">
+            <label th:for="zipcode">우편번호</label>
+            <input type="text" th:field="*{zipcode}" class="form-control" placeholder="우편번호를 입력하세요">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <br/>
+    <div th:replace="fragments/footer :: footer"/>
+</div> <!-- /container -->
+</body>
+</html>
