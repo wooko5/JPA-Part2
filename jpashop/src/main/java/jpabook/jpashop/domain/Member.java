@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class Member {
     @Column(name = "member_id") // DB에 표현될 칼럼명
     private Long id;
 
+    @NotBlank(message = "회원의 이름은 공백일 수 없습니다.")
     private String name;
 
     @Embedded
