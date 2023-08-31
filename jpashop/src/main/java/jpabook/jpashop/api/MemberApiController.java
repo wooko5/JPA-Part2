@@ -1,9 +1,10 @@
 package jpabook.jpashop.api;
 
-import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.service.MemberService;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,21 +40,26 @@ public class MemberApiController {
         return new CreateMemberResponse(id);
     }
 
+    /**
+     * 커맨드와 쿼리를 분리하는 습관을 가지는게 유지/보수에 좋다(CUD/R 분리)
+     * 예를 들어 memberService.update()를 호출하고, Member 엔티티를 반환하면
+     * 비영속 상태의 객체가 반환되기 때문에 유지/보수하기 어려울 수 있다.
+     */
     @PutMapping("/api/v2/members/{id}")
-    public UpdateMemberResponse updateMemberV2(@PathVariable("id")Long memberId, @RequestBody UpdateMemberRequest request){
-        Member member = memberService.findOne(memberId);
-        member.setName(request.getName());
-        member.setAddress(request.getAddress());
-        return new UpdateMemberResponse(member);
+    public UpdateMemberResponse updateMemberV2(@PathVariable("id") Long id, @RequestBody UpdateMemberRequest request) {
+        memberService.update(id, request.getName()); // 변경/추가 코드는 다른 조회성 코드와 혼재되지 않게 작성해주는 것을 추천
+        Member foundMember = memberService.findOne(id);
+        return new UpdateMemberResponse(foundMember.getId(), foundMember.getName());
     }
 
-    @Data
-    private static class CreateMemberRequest{
+    @Data //DTO를 inner class로 선언
+    private static class CreateMemberRequest {
         @NotBlank(message = "회원 이름은 공백일 수 없습니다.(V2)") // DTO에 validation 가능
         private String name;
     }
 
     @Data
+    @NoArgsConstructor
     private static class CreateMemberResponse {
         private Long id;
 
@@ -65,15 +71,13 @@ public class MemberApiController {
     @Data
     private static class UpdateMemberRequest {
         private String name;
-        private Address address;
     }
 
     @Data
+    @AllArgsConstructor //엔티티의 해당 어노테이션이나 @Setter 선언은 위험하지만 DTO는 상대적으로 자유롭다
     private static class UpdateMemberResponse {
-        private Member member;
-        public UpdateMemberResponse(Member member){
-            this.member = member;
-        }
+        private Long id;
+        private String name;
     }
 
 

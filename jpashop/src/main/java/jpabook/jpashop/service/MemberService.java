@@ -1,5 +1,6 @@
 package jpabook.jpashop.service;
 
+import jpabook.jpashop.api.MemberApiController;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -49,5 +50,11 @@ public class MemberService {
     /* 회원 단건 조회 */
     public Member findOne(Long id) {
         return memberRepository.findOne(id);
+    }
+
+    @Transactional
+    public void update(Long id, String name){
+        Member member = memberRepository.findOne(id); //영속상태
+        member.setName(name); //변경감지(Dirty Check) 발생하고, @Transactional에 의해서 트랜잭션 관련 AOP가 끝나면 JPA가 commit/flush 처리
     }
 }
