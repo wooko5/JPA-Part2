@@ -81,9 +81,35 @@
          }
          ```
 
-         
-
    - 회원 수정 API
+
+     - MemberService
+
+       - ```java
+         @Transactional
+         public void update(Long id, String name){
+             Member member = memberRepository.findOne(id); //영속상태
+             member.setName(name); //변경감지(Dirty Check) 발생하고, @Transactional에 의해서 트랜잭션 관련 AOP가 끝나면 JPA가 commit/flush 처리
+         }
+         ```
+
+     - MemberApiController
+
+       - ```java
+         /**
+         * 커맨드와 쿼리를 분리하는 습관을 가지는게 유지/보수에 좋다(CUD/R 분리)
+         * 예를 들어 memberService.update()를 호출하고, Member 엔티티를 반환하면
+         * 비영속 상태의 객체가 반환되기 때문에 유지/보수하기 어려울 수 있다.
+         */
+         @PutMapping("/api/v2/members/{id}")
+         public UpdateMemberResponse updateMemberV2(@PathVariable("id") Long id, @RequestBody UpdateMemberRequest request) {
+             memberService.update(id, request.getName()); // 변경/추가 코드는 다른 조회성 코드와 혼재되지 않게 작성해주는 것을 추천
+             Member foundMember = memberService.findOne(id);
+             return new UpdateMemberResponse(foundMember.getId(), foundMember.getName());
+         }
+         ```
+
+         
 
    - 회원 조회 API
 
