@@ -1,12 +1,11 @@
 package jpabook.jpashop.api;
 
+import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.service.MemberService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -40,18 +39,42 @@ public class MemberApiController {
         return new CreateMemberResponse(id);
     }
 
+    @PutMapping("/api/v2/members/{id}")
+    public UpdateMemberResponse updateMemberV2(@PathVariable("id")Long memberId, @RequestBody UpdateMemberRequest request){
+        Member member = memberService.findOne(memberId);
+        member.setName(request.getName());
+        member.setAddress(request.getAddress());
+        return new UpdateMemberResponse(member);
+    }
+
     @Data
-    static class CreateMemberRequest{
+    private static class CreateMemberRequest{
         @NotBlank(message = "회원 이름은 공백일 수 없습니다.(V2)") // DTO에 validation 가능
         private String name;
     }
 
     @Data
-    static class CreateMemberResponse {
+    private static class CreateMemberResponse {
         private Long id;
 
         public CreateMemberResponse(Long id) {
             this.id = id;
         }
     }
+
+    @Data
+    private static class UpdateMemberRequest {
+        private String name;
+        private Address address;
+    }
+
+    @Data
+    private static class UpdateMemberResponse {
+        private Member member;
+        public UpdateMemberResponse(Member member){
+            this.member = member;
+        }
+    }
+
+
 }
