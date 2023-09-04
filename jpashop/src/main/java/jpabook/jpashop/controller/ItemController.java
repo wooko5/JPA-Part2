@@ -27,8 +27,8 @@ public class ItemController {
     }
 
     @PostMapping("/items/new")
-    public String create(@Valid BookForm form, BindingResult result) {
-        if(result.hasErrors()){
+    public String create(@Valid @ModelAttribute("form") BookForm form, BindingResult result) {
+        if (result.hasErrors()) {
             return "items/createItemForm";
         }
         Book book = Book.createBook(null, form.getName(), form.getPrice(), form.getStockQuantity(), form.getAuthor(), form.getIsbn());
