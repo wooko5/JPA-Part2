@@ -229,7 +229,8 @@
                ]
            }
            ```
-         - ![image-20230912002819985](https://github.com/wooko5/JPA-Part2/assets/58154633/df3a2a9d-462e-40ce-bbbf-2cd8c2297bab)
+         - ![image-20230912002819985](https://github.com/wooko5/JPA-Part2/assets/58154633/66938185-d9bf-40ed-8da3-e37bc10b8e03)
+
 
 2. API 개발 고급
 
