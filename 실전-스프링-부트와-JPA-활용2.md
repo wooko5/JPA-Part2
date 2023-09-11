@@ -172,9 +172,9 @@
        - `@JsonIgnore`
 
          - before
-           - ![image-20230911232536223](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20230911232536223.png)
+           - <img width="348" alt="image-20230911232536223" src="https://github.com/wooko5/JPA-Part2/assets/58154633/fc6fe99a-845b-4b4f-ac46-8b1ce23560a2">
          - after
-           - ![image-20230911232750228](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20230911232750228.png)
+           - ![image-20230911232750228](https://github.com/wooko5/JPA-Part2/assets/58154633/c778780f-0794-4867-82b2-412e712589ac)
          - `@JsonIgnore`는 엔티티에서 해당 칼럼을 JSON 데이터로 보여주지않기 위한 임시방편이지 절대 해결방안이 아님
 
        - 해결
