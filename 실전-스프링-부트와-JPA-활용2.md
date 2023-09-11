@@ -14,15 +14,15 @@
 
        - `@Controller` + `@ResponseBody`
 
-     - `@ResponseBody`
-
-       - 자바 객체를 HttpResponse의 본문 responseBody의 내용으로 매핑하는 역할
-       - 자바 객체 ==> HTTP 통신의 body
-
      - `@RequestBody`
 
        - HttpRequest의 본문 requestBody의 내용을 자바 객체로 매핑하는 역할
        - HTTP 통신의 body ==> 자바 객체
+
+     - `@ResponseBody`
+
+       - 자바 객체를 HttpResponse의 본문 responseBody의 내용으로 매핑하는 역할
+       - 자바 객체 ==> HTTP 통신의 body
 
      - **Controller의 @RequestBody에 엔티티가 아닌 DTO를 사용하자**
 
