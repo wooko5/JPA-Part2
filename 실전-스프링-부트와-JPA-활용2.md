@@ -183,9 +183,17 @@
 
      - 회원 조회 V2
 
-       - `Result` 내부 클래스
+       - `Result` 클래스
 
          - JSON 리스트를 "data"라는 key로 포장하기 위한 클래스
+
+         - ```java
+           @Data
+           @AllArgsConstructor
+           static class Result<T> {
+               private T data;
+           }
+           ```
 
        - JSON 리스트를 감싸는 이유
 
