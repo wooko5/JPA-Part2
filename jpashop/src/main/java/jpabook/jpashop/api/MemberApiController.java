@@ -1,5 +1,6 @@
 package jpabook.jpashop.api;
 
+import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.service.MemberService;
 import lombok.AllArgsConstructor;
@@ -10,11 +11,33 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 public class MemberApiController {
     private final MemberService memberService;
+
+    /**
+     * 언뜻보면 굉장히 좋은 코드처럼 보이지만
+     * List<Member>로 반환하면 사용자가 몰라도 되는 Member의 모든 정보를 노출시킴, API 명세를 만들기 힘듦
+     */
+    @GetMapping("/api/v1/members")
+    public List<Member> membersV1() {
+        return memberService.findMembers();
+    }
+
+    @GetMapping("/api/v2/members")
+    public Result membersV2() {
+        List<Member> findMembers = memberService.findMembers();
+        List<MemberDto> collections = findMembers.stream()
+                .map(member -> new MemberDto(member.getName(), member.getAddress()))
+                .collect(Collectors.toList());
+
+        return new Result(collections);
+    }
+
 
     /**
      * Member 엔티티를 파라미터로 넘기는 API
@@ -80,5 +103,25 @@ public class MemberApiController {
         private String name;
     }
 
+    /**
+     * 해당 내부 클래스는 JSON의 포맷의 확장성을 위해서 만듦
+     * JSON 리스트로 바로 반환하지 말고, 포장해줄 필요가 있다.
+     * 예를 들어,
+     * { "data" : [{}, {}, ...] }가
+     * 아니라 [{}, {}, ...]으로 만들면
+     * 나중에 요구사항으로 count같은 파라미터를 넣어달라 했을 때, 확장하기 어렵기 때문
+     * 즉 API 스펙의 확장성을 위해 Result클래스를 생성
+     */
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private T data;
+    }
 
+    @Data
+    @AllArgsConstructor
+    static class MemberDto {
+        private String name;
+        private Address address;
+    }
 }

@@ -109,9 +109,120 @@
          }
          ```
 
-         
+     - > /오류정정/
+       >
+       > 회원 수정 API updateMemberV2 은 회원 정보를 부분 업데이트 한다. 
+       >
+       > 여기서 PUT 방식을 사용했는데, PUT은 전체 업데이트를 할 때 사용하는 것이 맞다. 
+       >
+       > 부분 업데이트를 하려면 PATCH를 사용하거나 POST를 사용하는 것이 REST 스타일에 맞다.
 
    - 회원 조회 API
+
+     - application.yml 수정
+
+       - ```yaml
+         spring:
+           datasource:
+             url: jdbc:h2:tcp://localhost/~/jpashop
+             username: sa
+             password:
+             driver-class-name: org.h2.Driver
+         
+           jpa:
+             hibernate:
+               ddl-auto: none # create은 서버가 시작되면 모든 table을 삭제하고 다시 생성, none은 기존에 있었던 table 정보를 유지
+             properties:
+               hibernate:
+                 show_sql: true
+                 format_sql: true
+         
+         logging:
+           level:
+             org.hibernate.SQL: debug
+             org.hibernate.type: trace
+         ```
+
+     - 회원 조회 V1
+
+       - ```java
+         @GetMapping("/api/v1/members")
+         public List<Member> membersV1() {
+             return memberService.findMembers();
+         }
+         ```
+
+       - 문제점
+
+         - ```
+           엔티티에 프레젠테이션 계층을 위한 로직이 추가된다.
+           
+           기본적으로 엔티티의 모든 값이 노출된다.
+            
+           응답 스펙을 맞추기 위해 로직이 추가된다. (@JsonIgnore, 별도의 뷰 로직 등등)
+           
+           실무에서는 같은 엔티티에 대해 API가 용도에 따라 다양하게 만들어지는데, 한 엔티티에 각각의 API를 위한 프레젠테이션 응답 로직을 담기는 어렵다.
+           
+           엔티티가 변경되면 API 스펙이 변한다.
+           
+           추가로 컬렉션을 직접 반환하면 항후 API 스펙을 변경하기 어렵다.(별도의 Result 클래스 생성으로
+           해결)
+           ```
+
+       - `@JsonIgnore`
+
+         - before
+           - ![image-20230911232536223](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20230911232536223.png)
+         - after
+           - ![image-20230911232750228](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20230911232750228.png)
+         - `@JsonIgnore`는 엔티티에서 해당 칼럼을 JSON 데이터로 보여주지않기 위한 임시방편이지 절대 해결방안이 아님
+
+       - 해결
+
+         -  **API 응답 스펙에 맞추어 별도의 DTO를 반환한다.**
+
+     - 회원 조회 V2
+
+       - `Result` 내부 클래스
+
+         - JSON 리스트를 "data"라는 key로 포장하기 위한 클래스
+
+       - JSON 리스트를 감싸는 이유
+
+         - JSON 포맷의 확장성
+
+         - ```json
+           /* 
+           만약 count 같은 json 파라미터를 추가해달라고 하면, 
+           적용 전의 json 리스트는 확장하기 어렵지만 
+           적용 후의 json 리스트는 "data" 옆에 "count" : [] 형식으로 붙일 수 있다. 
+           이렇게 API 스펙 확장에 열려있게 개발해야한다.
+           */
+           
+           // before
+           [
+               {
+                   "id": 1
+               },
+               {
+                   "id": 2
+               }
+           ]
+           
+           // after
+           {
+               "data": [
+                   {
+                       "id": 1
+                   },
+                   {
+                       "id": 2
+                   }
+               ]
+           }
+           ```
+
+           
 
 2. API 개발 고급
 

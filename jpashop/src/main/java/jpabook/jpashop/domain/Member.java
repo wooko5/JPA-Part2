@@ -1,5 +1,6 @@
 package jpabook.jpashop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,6 +30,7 @@ public class Member {
      * mappedBy는 양방향 관계에서 주인이 아닌 객체에서 사용한다.(읽기만 가능)
      * 즉 Member는 Order를 수정할 수 없고 조회만 가능하지만, Order는 Member를 가지고 있기에 조회 수정 모두 가능
      */
+    @JsonIgnore //불필요한 '주문' 정보를 JSON으로 보여주지 않기 위한 어노테이션
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>(); // 컬렉션은 필드에서 초기화 하자.
 
