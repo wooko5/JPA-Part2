@@ -1,6 +1,5 @@
 package jpabook.jpashop.domain.item;
 
-import jpabook.jpashop.controller.BookForm;
 import lombok.Getter;
 import lombok.Setter;
 

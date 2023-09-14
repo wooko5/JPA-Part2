@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static jpabook.jpashop.domain.OrderStatus.ORDER;
 import static jpabook.jpashop.domain.OrderStatus.CANCLE;
+import static jpabook.jpashop.domain.OrderStatus.ORDER;
 
 @Entity
 @Table(name = "orders")
