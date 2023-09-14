@@ -229,10 +229,122 @@
                ]
            }
            ```
+           
          - ![image-20230912002819985](https://github.com/wooko5/JPA-Part2/assets/58154633/66938185-d9bf-40ed-8da3-e37bc10b8e03)
+         
+           
 
 
 2. API 개발 고급
+
+   - API 개발 고급 소개
+
+     - 실무에서는 저장/삭제/수정 작업보다는 조회가 훨씬 많이 발생하기 때문에 조회 관련된 문제에 대해서 최적화를 진행할 예정
+
+   - 조회용 샘플 데이터 입력
+
+     - initDb 코드
+
+       - ```java
+         package jpabook.jpashop;
+         
+         import jpabook.jpashop.domain.*;
+         import jpabook.jpashop.domain.item.Book;
+         import lombok.RequiredArgsConstructor;
+         import org.springframework.stereotype.Component;
+         import org.springframework.transaction.annotation.Transactional;
+         
+         import javax.annotation.PostConstruct;
+         import javax.persistence.EntityManager;
+         
+         /**
+          *
+          */
+         @Component
+         @RequiredArgsConstructor
+         public class initDb {
+         
+             private final InitService initService;
+         
+             @PostConstruct
+             public void init() {
+                 initService.dbInit1();
+                 initService.dbInit2();
+             }
+         
+         
+             @Component
+             @Transactional
+             @RequiredArgsConstructor
+             static class InitService {
+         
+                 private final EntityManager entityManager;
+         
+                 public void dbInit1() {
+                     Member member = createInitialMember("Oh", "Seoul", "yeonhee-ro", "03171");
+                     entityManager.persist(member);
+         
+                     Book book1 = createInitialBook("JPA Part1", 10000, 100);
+                     entityManager.persist(book1);
+         
+                     Book book2 = createInitialBook("JPA Part2", 20000, 100);
+                     entityManager.persist(book2);
+         
+                     OrderItem orderItem1 = OrderItem.createOrderItem(book1, 10000, 1);
+                     OrderItem orderItem2 = OrderItem.createOrderItem(book2, 20000, 1);
+         
+                     //TODO: 주문을 2개 했는데 '주문내역' 화면에는 1개 주문만 출력 ==> 모든 주문이 조회된 화면으로 수정
+                     Delivery delivery = createInitialDelivery(member); // 실제로는 고객의 주소가 아닌 받는 사람의 배송지를 넣어야함
+                     Order order = Order.createOrder(member, delivery, orderItem1, orderItem2);
+                     entityManager.persist(order);
+                 }
+         
+                 public void dbInit2() {
+                     Member member = createInitialMember("Eom", "Busan", "oncheon-ro", "77717");
+                     entityManager.persist(member);
+         
+                     Book book1 = createInitialBook("Spring Part1", 20000, 200);
+                     entityManager.persist(book1);
+         
+                     Book book2 = createInitialBook("Spring Part2", 40000, 300);
+                     entityManager.persist(book2);
+         
+                     OrderItem orderItem1 = OrderItem.createOrderItem(book1, 20000, 3);
+                     OrderItem orderItem2 = OrderItem.createOrderItem(book2, 40000, 4);
+         
+                     Delivery delivery = createInitialDelivery(member); // 실제로는 고객의 주소가 아닌 받는 사람의 배송지를 넣어야함
+                     Order order = Order.createOrder(member, delivery, orderItem1, orderItem2);
+                     entityManager.persist(order);
+                 }
+         
+                 private Member createInitialMember(String name, String city, String street, String zipcode) {
+                     Member member = new Member();
+                     member.setName(name);
+                     member.setAddress(new Address(city, street, zipcode));
+                     return member;
+                 }
+         
+                 private Book createInitialBook(String name, int price, int stockQuantity) {
+                     Book book1 = new Book();
+                     book1.setName(name);
+                     book1.setPrice(price);
+                     book1.setStockQuantity(stockQuantity);
+                     return book1;
+                 }
+         
+                 private Delivery createInitialDelivery(Member member) {
+                     Delivery delivery = new Delivery();
+                     delivery.setAddress(member.getAddress()); // 실제로는 고객의 주소가 아닌 받는 사람의 배송지를 넣어야함 ==> 교육이니깐!!
+                     return delivery;
+                 }
+             }
+         }
+         
+         ```
+
+     - TODO
+
+       - 주문 내역에서 대표주문 1개만 나오는 문제를 모든 주문이 조회되게끔 바꿔보기
 
 3. API 개발 고급 - 지연 로딩과 조회 성능 최적화
 
