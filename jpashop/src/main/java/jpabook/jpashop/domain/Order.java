@@ -85,14 +85,14 @@ public class Order {
 
     /* 조회 로직 - 전체 주문 가격을 조회하는 메서드 */
     public int getTotalPrice() {
-        int totalPrice = 0;
-        for (OrderItem orderItem : orderItems) {
-            totalPrice += orderItem.getTotalPrice();
-        }
-        return totalPrice;
-//        /* stream 방식으로 하는 방법도 존재 */
-//        return orderItems.stream()
-//                .mapToInt(OrderItem::getTotalPrice)
-//                .sum();
+//        int totalPrice = 0;
+//        for (OrderItem orderItem : orderItems) {
+//            totalPrice += orderItem.getTotalPrice();
+//        }
+//        return totalPrice;
+        /* stream 방식으로 하는 방법도 존재 */
+        return orderItems.stream()
+                .mapToInt(OrderItem::getTotalPrice)
+                .sum();
     }
 }
