@@ -332,8 +332,57 @@
      - TODO
      
        - 주문 내역에서 대표주문 1개만 나오는 문제를 모든 주문이 조회되게끔 바꿔보기
+       
+         
    
 3. API 개발 고급 - 지연 로딩과 조회 성능 최적화
+
+   - 개요
+
+     - 주문 + 배송정보 + 회원을 조회하는 API를 만들자
+     - 지연 로딩 때문에 발생하는 성능 문제를 단계적으로 해결해보자
+
+   - 참고
+
+     - > 참고: 지금부터 설명하는 내용은 정말 중요합니다. 실무에서 JPA를 사용하려면 100% 이해해야 합니다.
+       >
+       > 안그러면 엄청난 시간을 날리고 강사를 원망하면서 인생을 허비하게 됩니다.
+
+   - 간단한 주문 조회 V1: 엔티티를 직접 노출
+
+     - jackson.databind.exc.InvalidDefinitionException
+
+       - ByteBuddyInterceptor
+
+       - ```java
+         @Entity
+         @Table(name = "orders")
+         @Getter
+         @Setter
+         public class Order {
+             @Id
+             @GeneratedValue
+             @Column(name = "order_id")
+             private Long id;
+         
+             /*
+             Order클래스의 Member는 Lazy전략 이기 때문에 포스트맨으로 Order 전체 조회를 하면, JPA에서 관련된 Member는 프록시 객체로 가짜로 넣어둔다.
+             그래서 Order 전체 조회 시, Order와 관련된 Member를 조회할 때, 순수 객체가 아닌 프록시 객체인 ByteBuddyInterceptor()를 조회하려고 하니 '500' 에러 발생
+             private Member member = new ByteBuddyInterceptor();
+             */
+             @ManyToOne(fetch = FetchType.LAZY) // 모든 연관관계는 지연로딩으로 설정, 연관관계의 주인으로 본다
+             @JoinColumn(name = "member_id") // 어떤 칼럼을 조인칼럼으로 쓸것인가? ==> Member의 member_id를 조인칼럼으로 쓰겠다(DB 관점)
+             private Member member;
+         }
+         ```
+
+         
+
+   - 간단한 주문 조회 V2: 엔티티를 DTO로 변환
+
+   - 간단한 주문 조회 V3: 엔티티를 DTO로 변환 - Fetch Join 최적화
+
+   - 간단한 주문 조회 V4: JPA에서 DTO로 바로 조회
 
 4. API 개발 고급 - 컬렉션 조회 최적화
 

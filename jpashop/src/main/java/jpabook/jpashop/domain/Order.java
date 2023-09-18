@@ -21,8 +21,12 @@ public class Order {
     @Column(name = "order_id")
     private Long id;
 
-    // 연관관계의 주인으로 본다
-    @ManyToOne(fetch = FetchType.LAZY) // 모든 연관관계는 지연로딩으로 설정
+    /*
+    Order클래스의 Member는 Lazy전략 이기 때문에 포스트맨으로 Order 전체 조회를 하면, JPA에서 관련된 Member는 프록시 객체로 가짜로 넣어둔다.
+    그래서 Order 전체 조회 시, Order와 관련된 Member를 조회할 때, 순수 객체가 아닌 프록시 객체인 ByteBuddyInterceptor()를 조회하려고 하니 '500' 에러 발생
+    private Member member = new ByteBuddyInterceptor();
+    */
+    @ManyToOne(fetch = FetchType.LAZY) // 모든 연관관계는 지연로딩으로 설정, 연관관계의 주인으로 본다
     @JoinColumn(name = "member_id") // 어떤 칼럼을 조인칼럼으로 쓸것인가? ==> Member의 member_id를 조인칼럼으로 쓰겠다(DB 관점)
     private Member member;
 
