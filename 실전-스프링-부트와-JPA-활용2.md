@@ -248,18 +248,6 @@
        - ```java
          package jpabook.jpashop;
          
-         import jpabook.jpashop.domain.*;
-         import jpabook.jpashop.domain.item.Book;
-         import lombok.RequiredArgsConstructor;
-         import org.springframework.stereotype.Component;
-         import org.springframework.transaction.annotation.Transactional;
-         
-         import javax.annotation.PostConstruct;
-         import javax.persistence.EntityManager;
-         
-         /**
-          *
-          */
          @Component
          @RequiredArgsConstructor
          public class initDb {
@@ -339,13 +327,12 @@
                  }
              }
          }
-         
          ```
-
+       
      - TODO
-
+     
        - 주문 내역에서 대표주문 1개만 나오는 문제를 모든 주문이 조회되게끔 바꿔보기
-
+   
 3. API 개발 고급 - 지연 로딩과 조회 성능 최적화
 
 4. API 개발 고급 - 컬렉션 조회 최적화
