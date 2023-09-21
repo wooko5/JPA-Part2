@@ -376,7 +376,51 @@
          }
          ```
 
+     - 해결 방법 - Hibernate5Module 을 스프링 빈으로 등록하면 해결
+
+       - ```groovy
+         /* build.gradle 설정 추가 스프링부트 3.0 이하 */
+         implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
          
+         /* 스프링부트 3.0 이상 */
+         implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5-jakarta'
+         ```
+
+       - 하지만 엔티티를 직접 노출하는 방법을 당연히 추천하지 않고, 교육이기 때문에 이런 것도 있다는 것만 알고 넘기자
+
+       - ```java
+         @SpringBootApplication
+         public class JpashopApplication {
+         
+             public static void main(String[] args) {
+                 SpringApplication.run(JpashopApplication.class, args);
+             }
+         
+             @Bean //OrderSimpleApiController의 V1을 굳이 쓸려고 만든 코드, 실제로는 엔티티를 직접 노출해서 API를 설계하지 않는다
+             Hibernate5Module hibernate5Module() {
+                 Hibernate5Module hibernate5Module = new Hibernate5Module();
+                 hibernate5Module.configure(Hibernate5Module.Feature.FORCE_LAZY_LOADING, true); // 강제 지연 로딩 설정
+                 return hibernate5Module;
+             }
+         
+         }
+         ```
+
+     - 주의점
+
+       > 엔티티를 직접 노출할 때는 양방향 연관관계가 걸린 곳은 꼭! 한 곳을 @JsonIgnore 처리 해야 한다. 안그러면 양쪽을 서로 호출하면서 무한 루프가 걸린다.
+       >
+       > 
+       >
+       > 지연 로딩(LAZY)을 피하기 위해 즉시 로딩(EARGR)으로 설정하면 안된다! 즉시 로딩 때문에 연관관계가 필요 없는 경우에도 데이터를 항상 조회해서 성능 문제가 발생할 수 있다. 즉시 로딩으로 설정하면 성능튜닝이 매우 어려워 진다
+       >
+       > 
+       >
+       > DTO로 변환해서 반환하는 것이 더 좋은방법이다
+
+     - 강조
+
+       - **항상 지연 로딩을 기본으로 하고, 성능 최적화가 필요한 경우에는 페치 조인(fetch join)을 사용하자! (V3에서 설명)**
 
    - 간단한 주문 조회 V2: 엔티티를 DTO로 변환
 
