@@ -424,6 +424,67 @@
 
    - 간단한 주문 조회 V2: 엔티티를 DTO로 변환
 
+     - 코드
+
+       - ```java
+         @GetMapping("/api/v2/simple-orders")
+         public Result ordersV2() {
+             List<Order> orders = orderRepository.findAllByString(new OrderSearch());
+         
+             /**
+                 * Order 2개 ==> 여기서는 N은 2
+                 * 1 + N 문제 -> 1 + Member N개 + Delivery N개 == 총 5번 호출
+                 */
+             List<SimpleOrderDto> result = orders.stream()
+                     .map(order -> new SimpleOrderDto(order))
+                     .collect(Collectors.toList());
+         
+             return new Result(result);
+         }
+         
+         @Data
+         private static class SimpleOrderDto {
+             private Long orderId;
+             private String name;
+             private LocalDateTime orderDate;
+             private OrderStatus orderStatus;
+             private Address address;
+         
+             // 엔티티를 통해서 DTO를 생성하는 것은 괜찮다
+             private SimpleOrderDto(Order order) {
+                 this.orderId = order.getId();
+                 this.name = order.getMember().getName(); // Lazy 초기화
+                 this.orderDate = order.getOrderDate();
+                 this.orderStatus = order.getStatus();
+                 this.address = order.getDelivery().getAddress(); // Lazy 초기화
+             }
+         }
+         ```
+
+     - V2 문제점 - `N + 1 문제`
+
+       - Lazy loading으로인한 `1 + N개`의 쿼리가 콘솔창에 출력되는 문제가 발생 
+
+       - ```
+         쿼리가 총 1 + N + N 번 실행된다. (V1과 쿼리수 결과는 같다.)
+         
+         order 조회 1번(order 조회 결과 수가 N이 된다. 여기서는 2개)
+         order -> member 지연 로딩 조회 N 번 (2번)
+         order -> delivery 지연 로딩 조회 N 번 (2번)
+         총 1 + 2 + 2 = SQL문이 5번 콘솔창에 출력
+         
+         ex) 
+         order의 결과가 3개면 최악의 경우 1 + 3 + 3 번 실행된다.
+         order의 결과가 3개면 최선의 경우 1 + 1 + 1 번 실행된다.(모든 주문을 똑같은 사용자와 똑같은 배송지로 주문한 경우)
+         
+         
+         지연로딩은 영속성 컨텍스트에서 조회하므로, 이미 조회된 경우 쿼리를 생략한다.
+         ```
+
+     - TIP
+
+       - Address는 엔티티가 아니라 Value Object(값 타입)이라서 DTO로 정의하지 않아도 된다
+
    - 간단한 주문 조회 V3: 엔티티를 DTO로 변환 - Fetch Join 최적화
 
    - 간단한 주문 조회 V4: JPA에서 DTO로 바로 조회

@@ -5,6 +5,7 @@ import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderSearch;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,12 +38,18 @@ public class OrderSimpleApiController {
     }
 
     @GetMapping("/api/v2/simple-orders")
-    public List<SimpleOrderDto> ordersV2() {
+    public Result ordersV2() {
         List<Order> orders = orderRepository.findAllByString(new OrderSearch());
+
+        /**
+         * Order 2개 ==> 여기서는 N은 2
+         * 1 + N 문제 -> 1 + Member N개 + Delivery N개 == 총 5번 호출
+         */
         List<SimpleOrderDto> result = orders.stream()
                 .map(order -> new SimpleOrderDto(order))
                 .collect(Collectors.toList());
-        return result;
+
+        return new Result(result);
     }
 
     @Data
@@ -53,12 +60,19 @@ public class OrderSimpleApiController {
         private OrderStatus orderStatus;
         private Address address;
 
+        // 엔티티를 통해서 DTO를 생성하는 것은 괜찮다
         private SimpleOrderDto(Order order) {
             this.orderId = order.getId();
-            this.name = order.getMember().getName();
+            this.name = order.getMember().getName(); // Lazy 초기화, SQL 출력
             this.orderDate = order.getOrderDate();
             this.orderStatus = order.getStatus();
-            this.address = order.getDelivery().getAddress();
+            this.address = order.getDelivery().getAddress(); // Lazy 초기화, SQL 출력
         }
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private T data;
     }
 }
