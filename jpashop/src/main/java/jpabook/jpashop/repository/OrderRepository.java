@@ -119,4 +119,18 @@ public class OrderRepository {
         TypedQuery<Order> query = entityManager.createQuery(criteriaQuery).setMaxResults(1000);
         return query.getResultList();
     }
+
+    /**
+     * 전체 주문 조회 시, 회원(Member)과 배송(Delivery)도 한번에 가져오게끔 FETCH JOIN을 하는 메소드
+     * 1. Lazy로 설정된 것도 무시하고 가져옴
+     * 2. 프록시 객체가 아닌 실제 DB 정보를 가져옴
+     * 페치 조인으로 Order -> Member , Order -> Delivery는 이미 조회된 상태이므로 지연로딩 발생 X
+     */
+    public List<Order> findAllWithMemberAndDelivery() {
+        return entityManager.createQuery(
+                "SELECT o FROM Order o " +
+                        "JOIN FETCH o.member m " +
+                        "JOIN FETCH o.delivery d", Order.class
+        ).getResultList();
+    }
 }
