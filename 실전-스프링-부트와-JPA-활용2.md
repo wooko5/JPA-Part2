@@ -432,9 +432,9 @@
              List<Order> orders = orderRepository.findAllByString(new OrderSearch());
          
              /**
-                 * Order 2개 ==> 여기서는 N은 2
-                 * 1 + N 문제 -> 1 + Member N개 + Delivery N개 == 총 5번 호출
-                 */
+             * Order 2개 ==> 여기서는 N은 2
+             * 1 + N 문제 -> 1 + Member N개 + Delivery N개 == 총 5번 호출
+             */
              List<SimpleOrderDto> result = orders.stream()
                      .map(order -> new SimpleOrderDto(order))
                      .collect(Collectors.toList());
