@@ -109,7 +109,7 @@
          }
          ```
 
-     - > /오류정정/
+     - > 오류 정정
        >
        > 회원 수정 API updateMemberV2 은 회원 정보를 부분 업데이트 한다. 
        >
@@ -281,7 +281,6 @@
                      OrderItem orderItem1 = OrderItem.createOrderItem(book1, 10000, 1);
                      OrderItem orderItem2 = OrderItem.createOrderItem(book2, 20000, 1);
          
-                     //TODO: 주문을 2개 했는데 '주문내역' 화면에는 1개 주문만 출력 ==> 모든 주문이 조회된 화면으로 수정
                      Delivery delivery = createInitialDelivery(member); // 실제로는 고객의 주소가 아닌 받는 사람의 배송지를 넣어야함
                      Order order = Order.createOrder(member, delivery, orderItem1, orderItem2);
                      entityManager.persist(order);
