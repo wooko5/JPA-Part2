@@ -1,11 +1,11 @@
 package jpabook.jpashop.api;
 
+import jpabook.jpashop.common.Result;
 import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderSearch;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,13 +52,18 @@ public class OrderSimpleApiController {
         return new Result(result);
     }
 
-    @GetMapping("/api/v3/simple-orders")
+    @GetMapping("/api/v3/simple-orders") // 엔티티를 DTO로 변환 - Fetch Join 최적화
     public Result ordersV3() {
         List<Order> orders = orderRepository.findAllWithMemberAndDelivery();
         List<SimpleOrderDto> result = orders.stream()
                 .map(order -> new SimpleOrderDto(order))
                 .collect(Collectors.toList());
         return new Result(result);
+    }
+
+    @GetMapping("/api/v4/simple-orders") // JPA(Repository)에서 DTO(OrderSimpleQueryDto)로 바로 조회
+    public Result ordersV4() {
+        return orderRepository.findOrderDtos();
     }
 
     @Data
@@ -77,11 +82,5 @@ public class OrderSimpleApiController {
             this.orderStatus = order.getStatus();
             this.address = order.getDelivery().getAddress(); // Lazy 초기화, SQL 출력
         }
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
     }
 }
