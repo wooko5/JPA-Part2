@@ -6,6 +6,7 @@ import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderSearch;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
+import jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 public class OrderSimpleApiController {
 
     private final OrderRepository orderRepository;
+    private final OrderSimpleQueryRepository orderSimpleQueryRepository;
 
     @GetMapping("/api/v1/simple-orders")
     public List<Order> ordersV1() {
@@ -63,7 +65,7 @@ public class OrderSimpleApiController {
 
     @GetMapping("/api/v4/simple-orders") // JPA(Repository)에서 DTO(OrderSimpleQueryDto)로 바로 조회
     public Result ordersV4() {
-        return orderRepository.findOrderDtos();
+        return new Result(orderSimpleQueryRepository.findOrderDtos());
     }
 
     @Data

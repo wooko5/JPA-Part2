@@ -1,6 +1,5 @@
 package jpabook.jpashop.repository;
 
-import jpabook.jpashop.common.Result;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderSearch;
@@ -135,14 +134,12 @@ public class OrderRepository {
         ).getResultList();
     }
 
-    public Result findOrderDtos() {
-        return new Result(
-                entityManager.createQuery(
-                                "SELECT new jpabook.jpashop.repository.OrderSimpleQueryDto(o.id, m.name, o.orderDate, o.status, d.address) " +
-                                        "FROM Order o " +
-                                        "JOIN FETCH o.member m " +
-                                        "JOIN FETCH o.delivery d", OrderSimpleQueryDto.class)
-                        .getResultList()
-        );
-    }
+//    public List<OrderSimpleQueryDto> findOrderDtos() {
+//        return entityManager.createQuery(
+//                "SELECT new jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryDto(o.id, m.name, o.orderDate, o.status, d.address) " +
+//                        "FROM Order o " +
+//                        "JOIN FETCH o.member m " +
+//                        "JOIN FETCH o.delivery d", OrderSimpleQueryDto.class
+//        ).getResultList();
+//    }
 }
