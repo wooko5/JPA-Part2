@@ -31,13 +31,10 @@ public class ItemService {
      */
     @Transactional
     public Item updateItem(Long itemId, String name, int price, int stockQuantity){
+        //TODO: Book, Album, Movie에 따라서 수정할 수 있는 항목이 추가되는데 이 부분에 대해서 ItemController에서 할지 아님 다른 방법을 쓸지 정하기
         Item foundItem = itemRepository.findOne(itemId);
-        //TODO: foundItem.change(price, name, stockQuantity);
-        foundItem.setName(name);
-        foundItem.setPrice(price);
-        foundItem.setStockQuantity(stockQuantity);
-        return foundItem;
-//        itemRepository.save(foundItem); //해당 코드를 사용하지 않아도 foundItem는 영속 상태의 엔티티라서 save()를 쓰지않아도 된다
+        foundItem.change(price, name, stockQuantity);
+        return foundItem; //itemRepository.save(foundItem); 해당 코드를 사용하지 않아도 foundItem는 영속 상태의 엔티티라서 save()를 쓰지않아도 된다
     }
 
     public List<Item> findItems() {

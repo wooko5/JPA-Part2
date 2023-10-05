@@ -133,13 +133,4 @@ public class OrderRepository {
                         "JOIN FETCH o.delivery d", Order.class
         ).getResultList();
     }
-
-//    public List<OrderSimpleQueryDto> findOrderDtos() {
-//        return entityManager.createQuery(
-//                "SELECT new jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryDto(o.id, m.name, o.orderDate, o.status, d.address) " +
-//                        "FROM Order o " +
-//                        "JOIN FETCH o.member m " +
-//                        "JOIN FETCH o.delivery d", OrderSimpleQueryDto.class
-//        ).getResultList();
-//    }
 }

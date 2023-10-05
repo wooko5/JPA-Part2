@@ -52,4 +52,10 @@ public abstract class Item {
         }
         this.stockQuantity = stock;
     }
+
+    public void change(int price, String name, int stockQuantity) {
+        this.price = price;
+        this.name = name;
+        this.stockQuantity = stockQuantity;
+    }
 }

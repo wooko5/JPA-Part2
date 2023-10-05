@@ -53,7 +53,7 @@ public class initDb {
             OrderItem orderItem1 = OrderItem.createOrderItem(book1, 10000, 1);
             OrderItem orderItem2 = OrderItem.createOrderItem(book2, 20000, 1);
 
-            Delivery delivery = createInitialDelivery(member); // 실제로는 고객의 주소가 아닌 받는 사람의 배송지를 넣어야함
+            Delivery delivery = createInitialDelivery(member); //TODO:실제로는 고객의 주소가 아닌 받는 사람의 배송지를 넣어야함
             Order order = Order.createOrder(member, delivery, orderItem1, orderItem2);
             entityManager.persist(order);
         }
@@ -71,7 +71,7 @@ public class initDb {
             OrderItem orderItem1 = OrderItem.createOrderItem(book1, 20000, 3);
             OrderItem orderItem2 = OrderItem.createOrderItem(book2, 40000, 4);
 
-            Delivery delivery = createInitialDelivery(member); // 실제로는 고객의 주소가 아닌 받는 사람의 배송지를 넣어야함
+            Delivery delivery = createInitialDelivery(member); //TODO:실제로는 고객의 주소가 아닌 받는 사람의 배송지를 넣어야함
             Order order = Order.createOrder(member, delivery, orderItem1, orderItem2);
             entityManager.persist(order);
         }
