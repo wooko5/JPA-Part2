@@ -512,10 +512,10 @@
 
      - Trade-off
      
-       - V4는 DB에서 원하는 칼럼(데이터)만 가져와서 DTO를 만듦
+       - V4는 DB에서 원하는 칼럼만 가져와서 DTO를 만듦
          - V3에 비해서 response data에 최적화된 DTO를 생성할 수 있음
          - 대신 repository의 재사용성이 떨어짐,  API 스펙에 맞춘 코드가 리포지토리에 들어가는 단점이기 때문에 화면에서 요구하는 데이터가 변경될때마다 repository에서 사용하는 쿼리문을 수정해야함
-       - V3는 DB에서 모든 칼럼(데이터)를 가져와서 controller/service에서 프론트에서 필요하는 DTO로 가공
+       - V3는 DB에서 모든 칼럼를 가져와서 controller/service에서 프론트에서 필요하는 DTO로 가공
      
      - SELECT절의 칼럼의 개수가 성능에 미비한 이유
      
