@@ -63,6 +63,11 @@ public class OrderSimpleApiController {
         return new Result(result);
     }
 
+    /**
+     * V3에 비해서 response에 fit한 DTO를 생성할 수 있다
+     * SELECT 절에서 원하는 데이터를 직접 선택하므로 DB 애플리케이션 네트웍 용량 최적화(요즘에는 컴퓨터가 너무 좋아서 생각보다 미비하다)
+     * V3에 비해서 repository 재사용성이 떨어짐, API 스펙에 맞춘 코드가 리포지토리에 들어가는 단점
+     */
     @GetMapping("/api/v4/simple-orders") // JPA(Repository)에서 DTO(OrderSimpleQueryDto)로 바로 조회
     public Result ordersV4() {
         return new Result(orderSimpleQueryRepository.findOrderDtos());
