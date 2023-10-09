@@ -347,7 +347,7 @@
        >
        > 안그러면 엄청난 시간을 날리고 강사를 원망하면서 인생을 허비하게 됩니다. by young-han kim
 
-   - 간단한 주문 조회 V1: 엔티티를 직접 노출
+   - 간단한 주문 조회 V1 : 엔티티를 직접 노출
 
      - jackson.databind.exc.InvalidDefinitionException
 
@@ -421,7 +421,7 @@
 
        - **항상 지연 로딩을 기본으로 하고, 성능 최적화가 필요한 경우에는 페치 조인(fetch join)을 사용하자! (V3에서 설명)**
 
-   - 간단한 주문 조회 V2: 엔티티를 DTO로 변환
+   - 간단한 주문 조회 V2 : 엔티티를 DTO로 변환
 
      - 코드
 
@@ -484,7 +484,7 @@
 
        - Address는 엔티티가 아니라 Value Object(값 타입)이라서 DTO로 정의하지 않아도 된다
 
-   - 간단한 주문 조회 V3: 엔티티를 DTO로 변환 - Fetch Join 최적화
+   - 간단한 주문 조회 V3 : 엔티티를 DTO로 변환 - Fetch Join 최적화
 
      - 개념
 
@@ -508,13 +508,13 @@
 
        - Order 전체 조회 시, 사용하지 않는 Member와 Delivery의 프로퍼티도 가져오기 때문에 이를 없애야함 
 
-   - 간단한 주문 조회 V4: JPA에서 DTO로 바로 조회
+   - 간단한 주문 조회 V4 : JPA에서 DTO로 바로 조회
 
      - Trade-off
      
        - V4는 DB에서 원하는 칼럼만 가져와서 DTO를 만듦
          - V3에 비해서 response data에 최적화된 DTO를 생성할 수 있음
-         - 대신 repository의 재사용성이 떨어짐,  API 스펙에 맞춘 코드가 리포지토리에 들어가는 단점이기 때문에 화면에서 요구하는 데이터가 변경될때마다 repository에서 사용하는 쿼리문을 수정해야함
+         - 그러나 repository의 재사용성이 떨어짐,  API 스펙에 맞춘 코드가 리포지토리에 들어가는 단점이기 때문에 화면에서 요구하는 데이터가 변경될때마다 repository에서 사용하는 쿼리문을 수정해야함
        - V3는 DB에서 모든 칼럼를 가져와서 controller/service에서 프론트에서 필요하는 DTO로 가공
      
      - SELECT절의 칼럼의 개수가 성능에 미비한 이유
