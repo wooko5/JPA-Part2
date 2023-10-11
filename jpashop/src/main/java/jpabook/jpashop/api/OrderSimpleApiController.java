@@ -29,7 +29,7 @@ public class OrderSimpleApiController {
     private final OrderRepository orderRepository;
     private final OrderSimpleQueryRepository orderSimpleQueryRepository;
 
-    @GetMapping("/api/v1/simple-orders")
+    @GetMapping("/api/v1/simple-orders") // V1 : 엔티티를 직접 노출
     public List<Order> ordersV1() {
         List<Order> all = orderRepository.findAllByString(new OrderSearch());
         for (Order order : all) {
@@ -39,7 +39,7 @@ public class OrderSimpleApiController {
         return all;
     }
 
-    @GetMapping("/api/v2/simple-orders")
+    @GetMapping("/api/v2/simple-orders") // V2 : 엔티티를 DTO로 변환
     public Result ordersV2() {
         List<Order> orders = orderRepository.findAllByString(new OrderSearch());
 
@@ -54,7 +54,7 @@ public class OrderSimpleApiController {
         return new Result(result);
     }
 
-    @GetMapping("/api/v3/simple-orders") // 엔티티를 DTO로 변환 - Fetch Join 최적화
+    @GetMapping("/api/v3/simple-orders") // V3 : 엔티티를 DTO로 변환 - Fetch Join 최적화
     public Result ordersV3() {
         List<Order> orders = orderRepository.findAllWithMemberAndDelivery();
         List<SimpleOrderDto> result = orders.stream()
@@ -68,7 +68,7 @@ public class OrderSimpleApiController {
      * SELECT 절에서 원하는 데이터를 직접 선택하므로 DB 애플리케이션 네트웍 용량 최적화(요즘에는 컴퓨터가 너무 좋아서 생각보다 미비하다)
      * V3에 비해서 repository 재사용성이 떨어짐, API 스펙에 맞춘 코드가 리포지토리에 들어가는 단점
      */
-    @GetMapping("/api/v4/simple-orders") // JPA(Repository)에서 DTO(OrderSimpleQueryDto)로 바로 조회
+    @GetMapping("/api/v4/simple-orders") // V4 : JPA(Repository)에서 DTO(OrderSimpleQueryDto)로 바로 조회
     public Result ordersV4() {
         return new Result(orderSimpleQueryRepository.findOrderDtos());
     }
