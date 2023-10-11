@@ -33,8 +33,8 @@ public class OrderSimpleApiController {
     public List<Order> ordersV1() {
         List<Order> all = orderRepository.findAllByString(new OrderSearch());
         for (Order order : all) {
-            order.getMember().getName(); // Lazy 강제 초기화
-            order.getDelivery().getAddress(); // Lazy 강제 초기화
+            order.getMember().getName(); // Lazy(지연로딩)에서 프록시를 강제 초기화
+            order.getDelivery().getAddress(); // Lazy(지연로딩)에서 프록시를 강제 초기화
         }
         return all;
     }

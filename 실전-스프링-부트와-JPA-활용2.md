@@ -369,8 +369,8 @@
              그래서 Order 전체 조회 시, Order와 관련된 Member를 조회할 때, 순수 객체가 아닌 프록시 객체인 ByteBuddyInterceptor()를 조회하려고 하니 '500' 에러 발생
              private Member member = new ByteBuddyInterceptor();
              */
-             @ManyToOne(fetch = FetchType.LAZY) // 모든 연관관계는 지연로딩으로 설정, 연관관계의 주인으로 본다
-             @JoinColumn(name = "member_id") // 어떤 칼럼을 조인칼럼으로 쓸것인가? ==> Member의 member_id를 조인칼럼으로 쓰겠다(DB 관점)
+             @ManyToOne(fetch = FetchType.LAZY)
+             @JoinColumn(name = "member_id")
              private Member member;
          }
          ```
@@ -539,9 +539,31 @@
 4. API 개발 고급 - 컬렉션 조회 최적화
 
    - 개요
+
      - 지금까지는 `XxxToOne`경우만 알아봤고, 이번에는 `XxxToMany`를 최적화하는 방법을 알아보자
+
    - 주문 조회 V1 : 엔티티 직접 노출
-     - 
+
+     - 기존의 간단한 주문 조회 V1과 동일
+
+     - 코드
+
+       - ```java
+         @GetMapping("/api/v1/orders") // V1 : 엔티티 직접 노출 (절대 추천하지 않는 방법)
+         public List<Order> ordersV1() {
+             List<Order> allByString = orderRepository.findAllByString(new OrderSearch());
+             for (Order order : allByString) {
+                 order.getMember().getName(); // Lazy(지연로딩)에서 프록시를 강제 초기화
+                 order.getDelivery().getAddress(); 
+         
+                 List<OrderItem> orderItems = order.getOrderItems();
+                 orderItems.stream().forEach(o -> o.getItem().getName()); // Lazy(지연로딩)에서 프록시를 강제 초기화
+             }
+             return allByString;
+         }
+         ```
+
+         
 
 5. API 개발 고급 - 실무 필수 최적화
 
