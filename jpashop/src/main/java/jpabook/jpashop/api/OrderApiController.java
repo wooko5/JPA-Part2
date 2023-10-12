@@ -1,14 +1,17 @@
 package jpabook.jpashop.api;
 
-import jpabook.jpashop.domain.Order;
-import jpabook.jpashop.domain.OrderItem;
-import jpabook.jpashop.domain.OrderSearch;
+import jpabook.jpashop.common.Result;
+import jpabook.jpashop.domain.*;
+import jpabook.jpashop.domain.item.Item;
 import jpabook.jpashop.repository.OrderRepository;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,5 +33,52 @@ public class OrderApiController {
 //            }
         }
         return allByString;
+    }
+
+    @GetMapping("/api/v2/orders")
+    public Result ordersV2() {
+        List<Order> orders = orderRepository.findAllByString(new OrderSearch());
+        List<OrderDto> result = orders.stream()
+                .map(o -> new OrderDto(o))
+                .collect(Collectors.toList());
+        return new Result(result);
+    }
+
+    @Data
+    private class OrderDto {
+        private Long orderId;
+        private String name;
+        private LocalDateTime orderDate;
+        private OrderStatus orderStatus;
+        private Address address;
+        private List<OrderItemDto> orderItems;
+
+        public OrderDto(Order order) {
+            this.orderId = order.getId();
+            this.name = order.getMember().getName();
+            this.orderDate = order.getOrderDate();
+            this.orderStatus = order.getStatus();
+            this.address = order.getDelivery().getAddress();
+            this.orderItems = order.getOrderItems().stream()
+                    .map(o -> new OrderItemDto(o))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    @Data
+    private class OrderItemDto { // 진행중
+        private Long id;
+        private Item item;
+        private Order order;
+        private int orderPrice; // 주문 가격
+        private int count; // 주문 수량
+
+        public OrderItemDto(OrderItem orderItem) {
+            this.id = orderItem.getId();
+            this.item = orderItem.getItem();
+            this.order = orderItem.getOrder();
+            this.orderPrice = orderItem.getOrderPrice();
+            this.count = orderItem.getCount();
+        }
     }
 }

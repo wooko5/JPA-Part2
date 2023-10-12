@@ -563,7 +563,15 @@
          }
          ```
 
-         
+   - 주문 조회 V2 : 엔티티를 DTO로 변환
+
+     - 진행중
+     - InvalidDefinitionException - No serializer found for class
+       - 문제발생 이유
+         - 객체를 Json으로 serializer 하는 과정에서 접근 제한자가 **public** 이거나 **getter/setter**를 이용하기 때문에 인스턴스 필드를 private 등으로 선언하면 json으로 변환 과정에서 에러가 발생 ==> OrderDto, OrderItemDto 클래스의 getter/setter를 해주지않음
+       - 해결방안
+         - @Data 어노테이션 사용
+         - @Data : @Getter, @Setter, @ToString, @EqualsAndHashCode, @RequiredArgsConstructor 자동 적용
 
 5. API 개발 고급 - 실무 필수 최적화
 
