@@ -45,7 +45,7 @@ public class OrderApiController {
     }
 
     @Data
-    private class OrderDto {
+    private static class OrderDto {
         private Long orderId;
         private String name;
         private LocalDateTime orderDate;
@@ -66,7 +66,7 @@ public class OrderApiController {
     }
 
     @Data
-    private class OrderItemDto { // 진행중
+    private static class OrderItemDto { // 진행중
         private Long id;
         private Item item;
         private Order order;
