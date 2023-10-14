@@ -27,7 +27,7 @@ public class OrderApiController {
             order.getDelivery().getAddress(); // Lazy(지연로딩)에서 프록시를 강제 초기화
 
             List<OrderItem> orderItems = order.getOrderItems();
-            orderItems.stream().forEach(o -> o.getItem().getName()); // 아래의 forEach문을 stream으로 변경
+            orderItems.forEach(o -> o.getItem().getName()); // 아래의 forEach문을 stream으로 변경
 //            for (OrderItem orderItem : orderItems) {
 //                orderItem.getItem().getName();
 //            }
@@ -39,7 +39,7 @@ public class OrderApiController {
     public Result ordersV2() {
         List<Order> orders = orderRepository.findAllByString(new OrderSearch());
         List<OrderDto> result = orders.stream()
-                .map(o -> new OrderDto(o))
+                .map(order -> new OrderDto(order))
                 .collect(Collectors.toList());
         return new Result(result);
     }
@@ -60,13 +60,13 @@ public class OrderApiController {
             this.orderStatus = order.getStatus();
             this.address = order.getDelivery().getAddress();
             this.orderItems = order.getOrderItems().stream()
-                    .map(o -> new OrderItemDto(o))
+                    .map(orderItem -> new OrderItemDto(orderItem))
                     .collect(Collectors.toList());
         }
     }
 
     @Data
-    private static class OrderItemDto { // 진행중
+    private static class OrderItemDto {
         private Long id;
         private Item item;
         private Order order;

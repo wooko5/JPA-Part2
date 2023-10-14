@@ -565,13 +565,25 @@
 
    - 주문 조회 V2 : 엔티티를 DTO로 변환
 
-     - 진행중
      - InvalidDefinitionException - No serializer found for class
        - 문제발생 이유
          - 객체를 Json으로 serializer 하는 과정에서 접근 제한자가 **public** 이거나 **getter/setter**를 이용하기 때문에 인스턴스 필드를 private 등으로 선언하면 json으로 변환 과정에서 에러가 발생 ==> OrderDto, OrderItemDto 클래스의 getter/setter를 해주지않음
        - 해결방안
          - @Data 어노테이션 사용
          - @Data : @Getter, @Setter, @ToString, @EqualsAndHashCode, @RequiredArgsConstructor 자동 적용
+     - Collections.forEach VS stream.forEach
+     - inner class에 static을 붙이는 이유
+       - [outer class의 숨은 외부참조를 막아서 메모리 누수를 막을 수 있음](https://inpa.tistory.com/entry/JAVA-%E2%98%95-%EC%9E%90%EB%B0%94%EC%9D%98-%EB%82%B4%EB%B6%80-%ED%81%B4%EB%9E%98%EC%8A%A4%EB%8A%94-static-%EC%9C%BC%EB%A1%9C-%EC%84%A0%EC%96%B8%ED%95%98%EC%9E%90)
+     
+   - 주문 조회 V3 : 엔티티를 DTO로 변환 - Fetch Join 최적화
+
+   - 주문 조회 V3.1 : 엔티티를 DTO로 변환 - 페이징과 한계 돌파
+
+   - 주문 조회 V4 : JPA에서 DTO 직접 조회
+
+   - 주문 조회 V5 : JPA에서 DTO 직접 조회 - 컬렉션 조회 최적화
+
+   - 주문 조회 V6 : JPA에서 DTO 직접 조회 - 플랫 데이터 최적화
 
 5. API 개발 고급 - 실무 필수 최적화
 
