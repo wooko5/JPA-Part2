@@ -27,10 +27,7 @@ public class OrderApiController {
             order.getDelivery().getAddress(); // Lazy(지연로딩)에서 프록시를 강제 초기화
 
             List<OrderItem> orderItems = order.getOrderItems();
-            orderItems.forEach(o -> o.getItem().getName()); // 아래의 forEach문을 stream으로 변경
-//            for (OrderItem orderItem : orderItems) {
-//                orderItem.getItem().getName();
-//            }
+            orderItems.forEach(o -> o.getItem().getName()); // Collections.forEach()는 단순 반복할 때 stream().forEach()보다 효율적
         }
         return allByString;
     }

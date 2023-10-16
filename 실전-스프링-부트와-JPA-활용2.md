@@ -571,7 +571,45 @@
        - 해결방안
          - @Data 어노테이션 사용
          - @Data : @Getter, @Setter, @ToString, @EqualsAndHashCode, @RequiredArgsConstructor 자동 적용
+       
      - Collections.forEach VS stream.forEach
+     
+       - 단순 반복
+     
+         - 차이는 미비하지만 stream 객체를 생성하고 해제하는 stream().forEach보다 Collections.forEach가 좀더 효율적
+     
+       - 동시성 문제
+     
+         - Collections.forEach는 `synchronized` 키워드가 있어서 반복 중에 락이 걸려있기 때문에 멀티쓰레드 환경에서 안정적
+     
+           - 수정을 감지하면 즉시 ConcurrentModificationException을 던지고 프로그램 종료
+           - ```java
+             @Override
+             public void forEach(Consumer<? super E> consumer) {
+                 synchronized (mutex) {c.forEach(consumer);} // synchronized 키워드 때문에 lock 걸림
+             }
+             ```
+         - stream().forEach는 반복 중에 다른 쓰레드에 의해 수정될 수 있고 무조건 끝까지 요소를 돌기때문에 일관성 없는 동작이 발생할 수 있다
+     
+           - 반복문이 모두 끝나고 나서 NullPointerException를 던지고 프로그램 종료
+     
+           - ```java
+             @Override
+             public Spliterator<E> spliterator() {
+                 return c.spliterator(); // 사용자에 의해서 수동적으로 동기화를 해줘야함 ==> 락이 안 걸려있음
+             }
+             ```
+     
+       - 결론
+     
+         - ```
+           1. Collections.forEach는 단순 반복할 때 stream().forEach보다 효율적
+           
+           2. Collections.stream().forEach은 원본 데이터를 수정하지 않고 가공하고 싶을 때 효율적
+           
+           3. Collections.parallelStream().forEach는 순서가 상관없는 병렬처리를 할 때 효율적
+           ```
+     
      - inner class에 static을 붙이는 이유
        - [outer class의 숨은 외부참조를 막아서 메모리 누수를 막을 수 있음](https://inpa.tistory.com/entry/JAVA-%E2%98%95-%EC%9E%90%EB%B0%94%EC%9D%98-%EB%82%B4%EB%B6%80-%ED%81%B4%EB%9E%98%EC%8A%A4%EB%8A%94-static-%EC%9C%BC%EB%A1%9C-%EC%84%A0%EC%96%B8%ED%95%98%EC%9E%90)
      
