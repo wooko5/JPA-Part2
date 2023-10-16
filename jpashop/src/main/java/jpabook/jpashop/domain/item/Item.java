@@ -1,7 +1,7 @@
 package jpabook.jpashop.domain.item;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jpabook.jpashop.domain.Category;
-import jpabook.jpashop.domain.OrderItem;
 import jpabook.jpashop.exception.NotEnoughStockException;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,11 +33,9 @@ public abstract class Item {
 
     private int stockQuantity;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "items")
     private List<Category> categories = new ArrayList<>(); // 컬렉션은 필드에서 초기화하자
-
-    @OneToMany(mappedBy = "item")
-    private List<OrderItem> orderItems = new ArrayList<>(); // 컬렉션은 필드에서 초기화하자
 
     /* 비즈니스 로직 - 상품 재고 추가 */
     public void addStock(int quantity) {
