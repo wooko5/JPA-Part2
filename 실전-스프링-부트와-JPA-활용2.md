@@ -645,7 +645,8 @@
 
        - 메모리에서 페이징해버린 위험한 예시
 
-         - ![image-20231018235749874](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231018235749874.png)
+         - ![image](https://github.com/wooko5/JPA-Part2/assets/58154633/1b1d57fb-0f23-4874-aa19-e613ec9fa0d3)
+
 
    - 주문 조회 V3.1 : 엔티티를 DTO로 변환 - 페이징과 한계 돌파
 
