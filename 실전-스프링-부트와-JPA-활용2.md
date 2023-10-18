@@ -627,7 +627,8 @@
 
        - 페이징이 불가능
 
-         - order 입장에서는 orderItem과는 OneToMany 관계이기 때문에 1대다 Fetch Join이 되면서 데이터가 order 두 개가 아닌 뻥튀기가 되어서 페이징이 불가능해짐
+         - order 입장에서는 orderItem과는 OneToMany 관계이기 때문에 1대다 Fetch Join이 적용되면 데이터가 order 두 개가 아닌 orderItem을 기준으로 뻥튀기가 되어서 임의의 페이징이 불가능해짐
+         - 예를 들어, 데이터가 1만 개 라면 전체 데이터를 어플리케이션단에 올리고 개발자가 아닌 메모리에서 페이징처리를 해버림 ==> out of memory 가능성 큼 ==> 끝장남
 
        - ```
          참고1
