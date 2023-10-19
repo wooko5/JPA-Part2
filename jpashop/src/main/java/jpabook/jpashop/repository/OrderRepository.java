@@ -148,6 +148,9 @@ public class OrderRepository {
                         "JOIN FETCH o.delivery d " +
                         "JOIN FETCH o.orderItems oi " +
                         "JOIN FETCH oi.item i", Order.class
-        ).setFirstResult(1).setMaxResults(100).getResultList();
+        )
+//                .setFirstResult(0)
+//                .setMaxResults(100)
+                .getResultList();
     }
 }

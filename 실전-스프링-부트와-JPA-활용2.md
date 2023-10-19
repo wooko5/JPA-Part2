@@ -615,25 +615,31 @@
      
    - 주문 조회 V3 : 엔티티를 DTO로 변환 - Fetch Join 최적화
 
-     - JPA에서 distinct 역할 
+     - JPA에서 distinct
        - DB에 distict 키워드를 붙여줌
-       - 같은 엔티티가 조회되면,애플리케이션에서 중복을 걸러준다. 예시로 order가 컬렉션 페치 조인 때문에 중복 조회 되는 것을 막아준다.
-
+       - 같은 엔티티가 조회되면,애플리케이션에서 중복을 걸러준다. 예시로 order가 컬렉션(OneToMany) 페치 조인 때문에 중복 조회 되는 것을 막아준다.
+       - distinct 적용 before
+         - ![image-20231019163545802](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20231019163545802.png)
+         - orderItem이 총 4개이므로 order와 1대다 관계인 orderItem과 Fetch Join 적용하면 모든 데이터(4개)를 조회
+       - distinct 적용 after
+         - ![image-20231019162907345](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20231019162907345.png)
+         - 중복없이 2개의 order만 조회 
+       
      - 장점
 
        - Fetch Join으로 SQL이 1번만 실행됨
-
+     
      - 단점
-
+     
        - 페이징이 불가능
-
+     
          - order 입장에서는 orderItem과는 OneToMany 관계이기 때문에 1대다 Fetch Join이 적용되면 데이터가 order 두 개가 아닌 orderItem을 기준으로 뻥튀기가 되어서 임의의 페이징이 불가능해짐
          - 예를 들어, 데이터가 1만 개 라면 전체 데이터를 어플리케이션단에 올리고 개발자가 아닌 메모리에서 페이징처리를 해버림 ==> out of memory 가능성 큼 ==> 끝장남
-
+     
        - ```
          참고1
          - 컬렉션 페치 조인을 사용하면 페이징이 불가능하다. 
-         - 하이버네이트는 경고 로그를 남기면서 모든 데이터를 DB에서 읽어오고, 메모리에서 페이징 해버린다(매우 위험하다). 
+         - 하이버네이트는 경고 로그를 남기면서 모든 데이터를 DB에서 읽어오고, 메모리에서 페이징 해버린다.(매우 위험하다)
          
          참고2 
          - 컬렉션 페치 조인은 1개만 사용할 수 있다. 
@@ -642,9 +648,9 @@
          
          자세한 내용은 자바 ORM 표준 JPA 프로그래밍의 페치 조인 부분을 참고하자.
          ```
-
+     
        - 메모리에서 페이징해버린 위험한 예시
-
+     
          - ![image](https://github.com/wooko5/JPA-Part2/assets/58154633/1b1d57fb-0f23-4874-aa19-e613ec9fa0d3)
 
 
@@ -658,4 +664,4 @@
 
 5. API 개발 고급 - 실무 필수 최적화
 
-6. 정리str
+6. 정리
