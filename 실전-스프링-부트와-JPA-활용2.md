@@ -619,10 +619,10 @@
        - DB에 distict 키워드를 붙여줌
        - 같은 엔티티가 조회되면,애플리케이션에서 중복을 걸러준다. 예시로 order가 컬렉션(OneToMany) 페치 조인 때문에 중복 조회 되는 것을 막아준다.
        - distinct 적용 before
-         - ![image-20231019163545802](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20231019163545802.png)
+         - ![before](https://github.com/wooko5/JPA-Part2/assets/58154633/56440b49-85cc-43f5-8777-524053dc94cf)
          - orderItem이 총 4개이므로 order와 1대다 관계인 orderItem과 Fetch Join 적용하면 모든 데이터(4개)를 조회
        - distinct 적용 after
-         - ![image-20231019162907345](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20231019162907345.png)
+         - ![after](https://github.com/wooko5/JPA-Part2/assets/58154633/ae71a2eb-c8c6-4ce0-b4b9-bb6b771217db)
          - 중복없이 2개의 order만 조회 
        
      - 장점
