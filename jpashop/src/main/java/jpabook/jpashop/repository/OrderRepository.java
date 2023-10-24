@@ -153,4 +153,21 @@ public class OrderRepository {
 //                .setMaxResults(100)
                 .getResultList();
     }
+
+    /**
+     * V3.1 - 페이징 최적화를 위한 첫번째 메소드
+     * @param offset
+     * @param limit
+     * @return List<Order>
+     */
+    public List<Order> findAllWithMemberAndDelivery(int offset, int limit) {
+        return entityManager.createQuery(
+                "SELECT o FROM Order o " +
+                        "JOIN FETCH o.member m " +
+                        "JOIN FETCH o.delivery d", Order.class
+        )
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }

@@ -7,6 +7,7 @@ import jpabook.jpashop.repository.OrderRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -44,6 +45,21 @@ public class OrderApiController {
     @GetMapping("/api/v3/orders")
     public Result ordersV3() {
         List<Order> orders = orderRepository.findAllWithItem();
+        List<OrderDto> result = orders.stream()
+                .map(order -> new OrderDto(order))
+                .collect(Collectors.toList());
+        return new Result(result);
+    }
+
+    /**
+     * offset은 0부터 시작하는 INDEX를 의미
+     * limit는 전체 데이터에서 잘라올 데이터 개수를 의미, EX) 데이터가 총 1000개면 페이징 10개가 생김
+     * Order 입장에서 Member, Delivery는 확실한 XxxToOne 관계이기 때문에 한번에 Fetch-Join으로 처리해도 됨
+     */
+    @GetMapping("/api/v3.1/orders")
+    public Result ordersV3_page(@RequestParam(value = "offset", defaultValue = "0") int offset,
+                                @RequestParam(value = "limit", defaultValue = "100") int limit) {
+        List<Order> orders = orderRepository.findAllWithMemberAndDelivery(offset, limit);
         List<OrderDto> result = orders.stream()
                 .map(order -> new OrderDto(order))
                 .collect(Collectors.toList());

@@ -16,6 +16,7 @@ import java.util.List;
  * InheritanceType.TABLE_PER_CLASS : Item을 상속받은 Album, Book, Movie 세 개를 테이블로 만드는 방법
  * 모두 장단점이 있으므로 팀에 맞는 방식을 쓰자
  */
+//@BatchSize(size = 1000) // XxxToOne인 경우 필드가 아닌 엔티티에 BatchSize를 작성하자
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Getter

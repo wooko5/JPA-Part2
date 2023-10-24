@@ -652,29 +652,98 @@
        - 메모리에서 페이징해버린 위험한 예시
      
          - ![image](https://github.com/wooko5/JPA-Part2/assets/58154633/1b1d57fb-0f23-4874-aa19-e613ec9fa0d3)
-
-
-   - 주문 조회 V3.1 : 엔티티를 DTO로 변환 - 페이징과 한계 돌파
-
-     - 컬렉션(1대N)을 페치 조인하면 페이징이 불가능
-
-       - ```
-         - 컬렉션을 페치 조인하면 일대다 조인이 발생하므로 데이터가 예측할 수 없이 증가한다.
-         
-         - 일다대에서 일(1)을 기준으로 페이징을 하는 것이 목적이다. 그런데 데이터는 다(N)를 기준으로 row가 생성된다.
-         
-         - Order를 기준으로 페이징 하고 싶은데, 다(N)인 OrderItem을 조인하면 OrderItem이 기준이 되어버린다.
-         
-         (더 자세한 내용은 자바 ORM 표준 JPA 프로그래밍 - 페치 조인 한계 참조)
-         ```
-
-       - 이 경우 하이버네이트는 경고 로그를 남기고 모든 DB 데이터를 읽어서 메모리에서 페이징을 시도한다. 최악의 경우 장애로 이어질 수 있다.
-
-   - 주문 조회 V4 : JPA에서 DTO 직접 조회
-
-   - 주문 조회 V5 : JPA에서 DTO 직접 조회 - 컬렉션 조회 최적화
-
-   - 주문 조회 V6 : JPA에서 DTO 직접 조회 - 플랫 데이터 최적화
+   
+   
+      - 주문 조회 V3.1 : 엔티티를 DTO로 변환 - 페이징과 한계 돌파
+   
+        - 컬렉션(1대N)을 페치 조인하면 페이징이 불가능
+   
+          - ```
+            - 컬렉션을 페치 조인하면 일대다 조인이 발생하므로 데이터가 예측할 수 없이 증가한다.
+            
+            - 일다대에서 일(1)을 기준으로 페이징을 하는 것이 목적이다. 그런데 데이터는 다(N)를 기준으로 row가 생성된다.
+            
+            - Order를 기준으로 페이징 하고 싶은데, 다(N)인 OrderItem을 조인하면 OrderItem이 기준이 되어버린다.
+            
+            (더 자세한 내용은 자바 ORM 표준 JPA 프로그래밍 - 페치 조인 한계 참조)
+            ```
+   
+          - 이 경우 하이버네이트는 경고 로그를 남기고 모든 DB 데이터를 읽어서 메모리에서 페이징을 시도한다. 최악의 경우 Out of Memeory 장애로 이어질 수 있음
+   
+        - **해결방안**
+   
+          - ```
+            1. XxxToOne(ex: OneToOne, ManyToOne) 관계는 모두 Fetch-Join한다.
+            	- XxxToOne 관계는 row수를 증가시키지 않으므로 페이징 쿼리에 영향을 주지 않는다.
+            	- Order 입장에서 Member, Delivery는 확실한 XxxToOne 관계
+            
+            
+            2. 컬렉션은 지연 로딩으로 조회한다
+            
+            
+            3. 지연 로딩 성능 최적화를 위해 hibernate.default_batch_fetch_size , @BatchSize 를 적용한다
+            	- hibernate.default_batch_fetch_size: 글로벌 설정
+            	- @BatchSize: 개별 최적화
+            	- 해당 옵션을 사용하면 컬렉션이나, 프록시 객체를 한꺼번에 설정한 size 만큼 IN 쿼리로 조회한다
+            ```
+   
+          - V3는 쿼리 호출 수가 Order를 전체조회하는 조인 SQL 1개, OrderItem 2개만큼의 SQL, Item  4개만큼의 SQL이 로그창에 작성됨
+   
+            - 1 ==> 2(N) ==> 4(M)
+   
+          - V3.1은 쿼리 호출 수가  Order를 전체 조회하는 조인 SQL 1개, OrderItem을 조회하는 1개의 SQL, Item을 조회하는 1개의 SQL이 로그창에 작성됨
+   
+            - 1 ==> 1 ==> 1
+            - 왜냐하면 limit 조건을 100으로 했기 때문에 100개 이하의 데이터는 한번에 IN 조건으로 출력한다. 만약 데이터가 1000개면 10번의 SQL을 출력
+   
+        - application.yml
+   
+          - ```yaml
+            spring:
+              datasource:
+                url: jdbc:h2:tcp://localhost/~/jpashop
+                username: sa
+                password:
+                driver-class-name: org.h2.Driver
+            
+              jpa:
+                hibernate:
+                  ddl-auto: create
+                properties:
+                  hibernate:
+            #        show_sql: true
+                    format_sql: true
+                    default_batch_fetch_size: 100 # 페이징 사이즈설정
+            
+            logging:
+              level:
+                org.hibernate.SQL: debug
+            #    org.hibernate.type: trace
+            ```
+   
+        - > 참고
+          >
+          > default_batch_fetch_size 의 크기는 100~1000 사이를 선택하는 것을 권장한다. 이 전략을 SQL IN 절을 사용하는데, 데이터베이스에 따라 IN 절 파라미터를 1000으로 제한하기도 한다. 
+          >
+          > 1000으로 잡으면 한번에 1000개를 DB에서 애플리케이션에 불러오므로 DB에 순간부하가 증가할 수 있다. 
+          >
+          > 하지만 애플리케이션은 100이든 1000이든 결국 전체 데이터를 로딩해야 하므로 메모리 사용량이 같다. 
+          >
+          > 1000으로 설정하는 것이 성능상 가장 좋지만, 결국 DB든 애플리케이션이든 순간 부하를 어디까지 견딜 수 있는지로 결정하면 된다.
+   
+        - WAS든 DB든 가장 잘 버틸 수 있는 큰 수를 사이즈로 선택해야하는 것을 추천
+   
+          - 100개든 1000개든 전체 데이터를 로딩하기 때문에 WAS입장에서 메모리 사용량은 비슷함
+   
+   
+      - 주문 조회 V4 : JPA에서 DTO 직접 조회
+   
+   
+      - 주문 조회 V5 : JPA에서 DTO 직접 조회 - 컬렉션 조회 최적화
+   
+   
+      - 주문 조회 V6 : JPA에서 DTO 직접 조회 - 플랫 데이터 최적화
+   
 
 5. API 개발 고급 - 실무 필수 최적화
 
