@@ -1,5 +1,6 @@
 package jpabook.jpashop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +32,7 @@ public class Order {
     private Member member;
 
 //    @BatchSize(size = 1000) // xxxToMany는 필드에 BatchSize를 제한하기 위해 작성 or application.yml에 설정
+    @JsonIgnore
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>(); // 컬렉션은 필드에서 초기화하자
 

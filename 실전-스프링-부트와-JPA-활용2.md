@@ -736,6 +736,33 @@
    
       - 주문 조회 V4 : JPA에서 DTO 직접 조회
    
+        - Order의  Repository 패키지를 나눈 이유
+   
+          - 비즈니스 로직과 관련된 엔티티를 찾을 때는 일단 Repository를 이용
+          - 특정 화면에 적합한 쿼리를 생성할 때는 패키지를 나누어서 작성
+   
+        - OrderDto를 안 쓰고 OrderQueryDto를 만든 이유
+   
+          - OrderDto를 쓰면 Repository가 Controller를 참조하게 되면서 의존관계가 무한순환참조 문제가 발생할 수 있다
+   
+        - 정리
+   
+          - ```
+            Query: 맨 처음 Order JOIN Member/Delivery (XxxToOne 관계) 1번, 컬렉션(XxxToMany 관계)인 OrderItem 2(N)번 실행
+            
+            XxxToOne(N:1, 1:1) 관계들을 먼저 조회하고, XxxToMany(1:N) 관계는 각각 별도로 처리한다.
+            
+            이런 방식을 선택한 이유는 다음과 같다.
+            XxxToOne 관계는 조인해도 데이터 row 수가 증가하지 않는다.
+            XxxToMany(1:N) 관계는 조인하면 row 수가 증가한다.
+            
+            row 수가 증가하지 않는 ToOne 관계는 조인으로 최적화 하기 쉬우므로 한번에 조회하고, ToMany 관계는 최적화 하기 어려우므로 findOrderItems() 같은 별도의 메서드로 조회한다
+            ```
+   
+        - TODO
+   
+          - 포스트맨 실행 시, OrderItem의 orderId가 null인 이유 알아내기
+   
    
       - 주문 조회 V5 : JPA에서 DTO 직접 조회 - 컬렉션 조회 최적화
    
