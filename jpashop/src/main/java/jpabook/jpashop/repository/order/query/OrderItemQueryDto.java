@@ -11,6 +11,7 @@ public class OrderItemQueryDto {
     private int count;
 
     public OrderItemQueryDto(Long orderId, String itemName, int price, int count) {
+        this.orderId = orderId;
         this.itemName = itemName;
         this.price = price;
         this.count = count;
