@@ -743,20 +743,20 @@
    
         - OrderDto를 안 쓰고 OrderQueryDto를 만든 이유
    
-          - OrderDto를 쓰면 Repository가 Controller를 참조하게 되면서 의존관계가 무한순환참조 문제가 발생할 수 있다
+          - OrderDto를 쓰면 Repository가 Controller를 참조한다. 즉 의존관계가 무한순환참조 문제가 발생할 수 있음
    
         - 정리
    
           - ```
-            Query: 맨 처음 Order JOIN Member/Delivery (XxxToOne 관계) 1번, 컬렉션(XxxToMany 관계)인 OrderItem 2(N)번 실행
+            - Query: 맨 처음 Order JOIN Member/Delivery (XxxToOne 관계) 1번, 컬렉션(XxxToMany 관계)인 OrderItem 2(N)번 실행
             
-            XxxToOne(N:1, 1:1) 관계들을 먼저 조회하고, XxxToMany(1:N) 관계는 각각 별도로 처리한다.
+            - XxxToOne(N:1, 1:1) 관계들을 먼저 조회하고, XxxToMany(1:N) 관계는 각각 별도로 처리한다.
             
-            이런 방식을 선택한 이유는 다음과 같다.
+            - 이런 방식을 선택한 이유는 다음과 같다.
             XxxToOne 관계는 조인해도 데이터 row 수가 증가하지 않는다.
             XxxToMany(1:N) 관계는 조인하면 row 수가 증가한다.
             
-            row 수가 증가하지 않는 ToOne 관계는 조인으로 최적화 하기 쉬우므로 한번에 조회하고, ToMany 관계는 최적화 하기 어려우므로 findOrderItems() 같은 별도의 메서드로 조회한다
+            - row 수가 증가하지 않는 ToOne 관계는 조인으로 최적화 하기 쉬우므로 한번에 조회하고, ToMany 관계는 최적화 하기 어려우므로 findOrderItems() 같은 별도의 메서드로 조회한다
             ```
    
    
