@@ -25,9 +25,6 @@ public class OrderQueryRepository {
 
     /**
      * Order기준으로 컬렉션(XxxToMany)인 OrderItem은 따로 조회
-     *
-     * @param orderId
-     * @return List<OrderItemQueryDto>
      */
     private List<OrderItemQueryDto> findOrderItems(Long orderId) {
         return entityManager.createQuery(
@@ -84,5 +81,16 @@ public class OrderQueryRepository {
         return orderQueryDtos.stream()
                 .map(o -> o.getOrderId())
                 .collect(Collectors.toList());
+    }
+
+    public List<OrderFlatDto> findAllByDtoFlat() {
+        return entityManager.createQuery(
+                "SELECT new jpabook.jpashop.repository.order.query.OrderFlatDto(o.id, m.name, o.orderDate, o.status, d.address, i.name, oi.orderPrice, oi.count) " +
+                        "FROM Order o " +
+                        "JOIN o.member m " +
+                        "JOIN o.delivery d " +
+                        "JOIN o.orderItems oi " +
+                        "JOIN oi.item i", OrderFlatDto.class
+        ).getResultList();
     }
 }
