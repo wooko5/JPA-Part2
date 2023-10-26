@@ -51,29 +51,38 @@ public class OrderQueryRepository {
                 .getResultList();
     }
 
-//    public List<OrderQueryDto> findAllByDtoOptimization() {
-//        List<OrderQueryDto> result = findOrders();
-//        Map<Long, List<OrderItemQueryDto>> orderItemMap = findOrderItemMap(toOrderIds(result));
-//        result.forEach(o -> o.setOrderItems(orderItemMap.get(o.getOrderId())));
-//        return result;
-//    }
-//
-//    private List<Long> toOrderIds(List<OrderQueryDto> result) {
-//        return result.stream()
-//                .map(o -> o.getOrderId())
-//                .collect(Collectors.toList());
-//    }
-//
-//    private Map<Long, List<OrderItemQueryDto>> findOrderItemMap(List<Long> ordersIds) {
-//        List<OrderItemQueryDto> orderItems = entityManager.createQuery(
-//                        "SELECT new jpabook.jpashop.repository.order.query.OrderItemQueryDto(oi.order.id, oi.item.name, oi.orderPrice, oi.count) " +
-//                                "FROM OrderItem oi " +
-//                                "JOIN oi.item i " +
-//                                "WHERE oi.order.id in :ordersIds", OrderItemQueryDto.class)
-//                .setParameter("ordersIds", ordersIds)
-//                .getResultList();
-//
-//        return orderItems.stream()
-//                .collect(Collectors.groupingBy(OrderItemQueryDto::getOrderId)); //OrderItemQueryDto의 데이터를 orderId를 기준으로 그룹화
-//    }
+    public List<OrderQueryDto> findAllByDtoOptimization() {
+        // 루트 조회(XxxToOne 코드를 모두 한번에 조회)
+        List<OrderQueryDto> result = findOrders();
+
+        // findOrderQueryDtos()처럼 loop를 돌지 않고, DB에서 OrderItem 데이터를 한번에 가져오는 코드를 작성
+        Map<Long, List<OrderItemQueryDto>> orderItemMap = findOrderItemMap(toOrderIds(result));
+
+        // loop를 돌면서 컬렉션 추가(추가 쿼리 실행X)
+        result.forEach(o -> o.setOrderItems(orderItemMap.get(o.getOrderId())));
+
+        return result;
+    }
+
+    private Map<Long, List<OrderItemQueryDto>> findOrderItemMap(List<Long> orderIds) {
+        List<OrderItemQueryDto> orderItems = entityManager.createQuery(
+                "SELECT new jpabook.jpashop.repository.order.query.OrderItemQueryDto(oi.order.id, i.name, oi.orderPrice, oi.count) " +
+                        "FROM OrderItem oi " +
+                        "JOIN oi.item i " +
+                        "WHERE oi.order.id IN :orderIds ", OrderItemQueryDto.class)
+                .setParameter("orderIds", orderIds)
+                .getResultList();
+
+        // DB에서 가져온 OrderItem 데이터를 Map에 세팅
+        Map<Long, List<OrderItemQueryDto>> orderItemMap = orderItems.stream()
+                .collect(Collectors.groupingBy(orderItemQueryDto -> orderItemQueryDto.getOrderId()));
+        return orderItemMap;
+    }
+
+    // OrderQueryDto의 orderId를 모두 뽑아내서 List<Long>를 반환
+    private List<Long> toOrderIds(List<OrderQueryDto> orderQueryDtos) {
+        return orderQueryDtos.stream()
+                .map(o -> o.getOrderId())
+                .collect(Collectors.toList());
+    }
 }
