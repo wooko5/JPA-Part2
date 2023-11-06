@@ -11,14 +11,15 @@ import javax.persistence.EntityManager;
 
 /**
  * 초기 샘플데이터를 입력하기 위한 클래스
- * @PostConstruct를 통해서 데이터를 생성
  *
+ * @PostConstruct를 통해서 데이터를 생성
+ * <p>
  * Oh (Member)
- *  - JPA Part1
- *  - JPA Part2
+ * - JPA Part1
+ * - JPA Part2
  * Eom (Member)
- *  - Spring Part1
- *  - Spring Part2
+ * - Spring Part1
+ * - Spring Part2
  */
 @Component
 @RequiredArgsConstructor
@@ -44,10 +45,10 @@ public class initDb {
             Member member = createInitialMember("Oh", "Seoul", "yeonhee-ro", "03171");
             entityManager.persist(member);
 
-            Book book1 = createInitialBook("JPA Part1", 10000, 100);
+            Book book1 = createInitialBook("The Lord of the Rings", 45000, 100, "J.R.R Tolkien", "H00000009263");
             entityManager.persist(book1);
 
-            Book book2 = createInitialBook("JPA Part2", 20000, 100);
+            Book book2 = createInitialBook("The Silmarillion", 33000, 100);
             entityManager.persist(book2);
 
             OrderItem orderItem1 = OrderItem.createOrderItem(book1, 10000, 1);
@@ -62,10 +63,10 @@ public class initDb {
             Member member = createInitialMember("Eom", "Busan", "oncheon-ro", "77717");
             entityManager.persist(member);
 
-            Book book1 = createInitialBook("Spring Part1", 20000, 200);
+            Book book1 = createInitialBook("Dune Part1", 30000, 200, "Frank Herbert", "H00000009999");
             entityManager.persist(book1);
 
-            Book book2 = createInitialBook("Spring Part2", 40000, 300);
+            Book book2 = createInitialBook("The Hunger Games", 13000, 300);
             entityManager.persist(book2);
 
             OrderItem orderItem1 = OrderItem.createOrderItem(book1, 20000, 3);
@@ -84,11 +85,21 @@ public class initDb {
         }
 
         private Book createInitialBook(String name, int price, int stockQuantity) {
-            Book book1 = new Book();
-            book1.setName(name);
-            book1.setPrice(price);
-            book1.setStockQuantity(stockQuantity);
-            return book1;
+            Book book = new Book();
+            book.setName(name);
+            book.setPrice(price);
+            book.setStockQuantity(stockQuantity);
+            return book;
+        }
+
+        private Book createInitialBook(String name, int price, int stockQuantity, String author, String isbn) {
+            Book book = new Book();
+            book.setName(name);
+            book.setPrice(price);
+            book.setStockQuantity(stockQuantity);
+            book.setAuthor(author);
+            book.setIsbn(isbn);
+            return book;
         }
 
         private Delivery createInitialDelivery(Member member) {
