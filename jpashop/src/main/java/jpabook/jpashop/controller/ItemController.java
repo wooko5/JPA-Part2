@@ -2,6 +2,7 @@ package jpabook.jpashop.controller;
 
 import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
+import jpabook.jpashop.domain.item.ItemType;
 import jpabook.jpashop.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -64,5 +66,14 @@ public class ItemController {
 //        itemService.saveItem(book);
         itemService.updateItem(itemId, form.getName(), form.getPrice(), form.getStockQuantity());
         return "redirect:/items";
+    }
+
+    @ModelAttribute("itemTypes")
+    public List<ItemType> itemTypes() {
+        List<ItemType> itemTypes = new ArrayList<>();
+        itemTypes.add(new ItemType("BOOK", "도서"));
+        itemTypes.add(new ItemType("MOVIE", "영화"));
+        itemTypes.add(new ItemType("ALBUM", "앨범"));
+        return itemTypes;
     }
 }

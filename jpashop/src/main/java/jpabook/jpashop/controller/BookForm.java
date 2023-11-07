@@ -23,4 +23,5 @@ public class BookForm {
     @NotBlank(message = "작가는 공백일 수 없습니다.")
     private String author;
     private String isbn;
+    private String itemType;
 }
