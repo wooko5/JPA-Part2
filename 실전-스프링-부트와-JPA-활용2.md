@@ -883,9 +883,93 @@
    
           - V5가 V4보다 성능이 확실히 좋고, V6는 완전히 다른 접근법이라 비교하기 애매함(DTO 직접 조회 방식을 쓴다면 V5를 추천)
    
+            
+   
 5. API 개발 고급 - 실무 필수 최적화
 
    - OSIV와 성능 최적화
-     - 
+
+     - 정의
+
+       - Open Session In View == 하이버네이트
+       - Open EntityManager In View == JPA
+
+     - WARN 오류
+
+       - ```java
+         WARN 12468 --- [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+         ```
+
+       - 서버 실행 시, 시작 시점에 WARN 로그를 남김
+
+     - spring.jpa.open-in-view : true (기본값)
+
+       - 흐름도
+         - ![image-20231109011840108](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231109011840108.png)
+       - 설명
+         - OSIV 전략은 트랜잭션 시작처럼 최초 데이터베이스 커넥션 시작 시점부터 API 응답이 끝날 때 까지 영속성 컨텍스트와 데이터베이스 커넥션을 유지한다. 
+           - 지금까지 View Template이나 API 컨트롤러에서 지연 로딩이 가능
+           - 영속성 컨텍스트와 DB와의 커넥션이 끝까지 살아있는 경우를 의미
+           - HTML 렌더링이 모두 끝나고 클라이언트에게 모든 response가 도달하면 영속성 컨텍스트와 DB와의 커넥션이 끝남
+       - 장점
+         - 엔티티를 적극 활용해서 지연로딩을 컨트롤러나 뷰 같은 곳에서 적극활용할 수 있음
+       - 단점
+         - 오랜 시간 동안 데이터베이스 커넥션 리소스를 사용하기 때문에, 실시간 트래픽이 중요한 애플리케이션에서는 커넥션이 모자랄 수 있음 ==> 장애로 이어짐
+         - 예를 들어, 컨트롤러에서 외부 API를 호출하면 외부 API 대기 시간 만큼 커넥션 리소스를 반환하지 못하고, 유지해야 한다.
+
+     - spring.jpa.open-in-view : false (OSIV 종료)
+
+       - 흐름도
+
+         - ![image-20231109012823394](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231109012823394.png)
+
+       - 설명
+
+         - OSIV를 끄면, 트랜잭션을 종료할 때 영속성 컨텍스트를 닫고, 데이터베이스 커넥션도 반환 ==> 커넥션 리소스를 낭비하지 않음 (장점)
+         - OSIV를 끄면 ,모든 지연로딩을 트랜잭션 안에서 처리해야 함 ==> 지금까지 작성한 많은 지연 로딩 코드를 트랜잭션 안으로 넣어야 하는 단점이 있음 (단점)
+         - 그리고 view template에서 지연로딩이 동작하지 않음
+         - 결론적으로 트랜잭션이 끝나기 전에 지연 로딩을 강제로 호출해 두어야 함
+
+       - 코드
+
+         - ```java
+           /*
+           Controller단
+           */
+           @PostMapping("/api/v1/member")
+           public CreateMemberResponse saveMemberV1(@RequestBody @Valid Member member) {
+               Long id = memberService.join(member);
+               return new CreateMemberResponse(id);
+           }
+           
+           /*
+           Service단
+           */
+           @Transactional
+           public Long join(Member member) {
+               validateDuplicateMember(member);
+               memberRepository.save(member);
+               return member.getId();
+           }
+           ```
+
+         - OSIV를 끄면, Service단의 @Transactional을 벗어나는 순간 영속성 컨텍스트가 없어지면서 DB의 연결이 끊어짐
+
+       - LazyInitializationException
+
+         - ![image-20231109013926676](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231109013926676.png)
+         - 예를 들어, Controller단의 memberService.join(member)으로 `Long id`가 반환되는 순간 영속성 컨텍스트가 없어지면서 DB의 연결이 끊어짐
+
+     - 커멘드와 쿼리 분리
+
+       - 실무에서 OSIV를 끈 상태로 복잡성을 관리하는 좋은 방법이 있다. 바로 Command와 Query를 분리하는 것
+       - 예를 들어, OrderService를 두 개의 서비스로 분리하기
+         - OrderService: 핵심 비즈니스 로직
+         - OrderQueryService: 화면이나 API에 맞춘 서비스 (주로 읽기 전용 트랜잭션 == 조회성 API)
+
+     - TIP
+
+       - 서비스의 실시간 API는 OSIV를 끄고
+       - ADMIN 처럼 커넥션을 많이 사용하지 않는 곳에 서는 OSIV를 켬
 
 6. 정리

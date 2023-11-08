@@ -31,7 +31,7 @@ public class OrderApiController {
         List<Order> allByString = orderRepository.findAllByString(new OrderSearch());
         for (Order order : allByString) {
             order.getMember().getName(); // Lazy(지연로딩)에서 프록시를 강제 초기화
-            order.getDelivery().getAddress(); // Lazy(지연로딩)에서 프록시를 강제 초기화
+            order.getDelivery().getAddress(); // OSIV를 끄면, Service단의 @Transactional을 벗어나는 순간 영속성 컨텍스트가 없어지면서 DB의 연결이 끊어짐 ==> LazyInitializationException 발생
 
             List<OrderItem> orderItems = order.getOrderItems();
             orderItems.forEach(o -> o.getItem().getName()); // Collections.forEach()는 단순 반복할 때 stream().forEach()보다 효율적
