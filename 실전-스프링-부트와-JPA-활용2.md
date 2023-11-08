@@ -905,7 +905,7 @@
      - spring.jpa.open-in-view : true (기본값)
 
        - 흐름도
-         - ![image-20231109011840108](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231109011840108.png)
+         - ![image](https://github.com/wooko5/JPA-Part2/assets/58154633/8c8b69de-21b7-4423-ac5a-1cde60846e73)
        - 설명
          - OSIV 전략은 트랜잭션 시작처럼 최초 데이터베이스 커넥션 시작 시점부터 API 응답이 끝날 때 까지 영속성 컨텍스트와 데이터베이스 커넥션을 유지한다. 
            - 지금까지 View Template이나 API 컨트롤러에서 지연 로딩이 가능
@@ -921,7 +921,7 @@
 
        - 흐름도
 
-         - ![image-20231109012823394](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231109012823394.png)
+         - ![image](https://github.com/wooko5/JPA-Part2/assets/58154633/7afdb447-4624-40b1-ad41-037162a9f027)
 
        - 설명
 
@@ -957,7 +957,7 @@
 
        - LazyInitializationException
 
-         - ![image-20231109013926676](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20231109013926676.png)
+         - ![image](https://github.com/wooko5/JPA-Part2/assets/58154633/db9c7b49-13f6-4bee-b724-7c6942f67ac4)
          - 예를 들어, Controller단의 memberService.join(member)으로 `Long id`가 반환되는 순간 영속성 컨텍스트가 없어지면서 DB의 연결이 끊어짐
 
      - 커멘드와 쿼리 분리
