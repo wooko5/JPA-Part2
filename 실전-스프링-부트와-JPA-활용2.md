@@ -839,7 +839,7 @@
    
         - 권장순서
    
-          1. 엔티티 조회 방식으로 우선 접근
+          1. 엔티티 조회 방식으로 우선 접근 (엔티티 조회 후, Controller에서 DTO로 변환)
              - Fetch Join으로 쿼리 수 최적화
              - 컬렉션 최적화
                - 페이징 필요 O: `hibernate.default_batch_fetch_size`, `@BatchSize`로 최적화
