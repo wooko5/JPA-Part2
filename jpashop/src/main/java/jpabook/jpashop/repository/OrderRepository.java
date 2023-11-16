@@ -1,9 +1,9 @@
 package jpabook.jpashop.repository;
 
-import jpabook.jpashop.domain.Member;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jpabook.jpashop.domain.Order;
-import jpabook.jpashop.domain.OrderSearch;
-import lombok.RequiredArgsConstructor;
+import jpabook.jpashop.domain.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -13,11 +13,20 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@RequiredArgsConstructor
+import static jpabook.jpashop.domain.QMember.*;
+import static jpabook.jpashop.domain.QOrder.*;
+
 @Repository
 public class OrderRepository {
 
     private final EntityManager entityManager;
+    private final JPAQueryFactory jpaQueryFactory;
+
+    public OrderRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
+        this.jpaQueryFactory = new JPAQueryFactory(entityManager);
+    }
+
 
     public void save(Order order) {
         entityManager.persist(order);
@@ -120,6 +129,32 @@ public class OrderRepository {
         return query.getResultList();
     }
 
+    public List<Order> findAllByQueryDsl(OrderSearch orderSearch) {
+
+        return jpaQueryFactory
+                .select(order)
+                .from(order)
+                .join(order.member, member)
+                .where(statusEqual(orderSearch.getOrderStatus()), nameLike(orderSearch, member))
+//                .where(order.status.eq(orderSearch.getOrderStatus())) // 둘은 같은 조건
+                .limit(1000)
+                .fetch();
+    }
+
+    private BooleanExpression nameLike(OrderSearch orderSearch, QMember member) {
+        if (!StringUtils.hasText(orderSearch.getMemberName())) {
+            return null;
+        }
+        return member.name.like(orderSearch.getMemberName());
+    }
+
+    private BooleanExpression statusEqual(OrderStatus orderStatus) {
+        if (orderStatus == null) {
+            return null;
+        }
+        return QOrder.order.status.eq(orderStatus);
+    }
+
     /**
      * 전체 주문 조회 시, 회원(Member)과 배송(Delivery)도 한번에 가져오게끔 FETCH JOIN을 하는 메소드
      * 1. Lazy로 설정된 것도 무시하고 가져옴
@@ -142,13 +177,13 @@ public class OrderRepository {
      */
     public List<Order> findAllWithItem() {
         return entityManager.createQuery(
-                "SELECT DISTINCT o " +
-                        "FROM Order o " +
-                        "JOIN FETCH o.member m " +
-                        "JOIN FETCH o.delivery d " +
-                        "JOIN FETCH o.orderItems oi " +
-                        "JOIN FETCH oi.item i", Order.class
-        )
+                        "SELECT DISTINCT o " +
+                                "FROM Order o " +
+                                "JOIN FETCH o.member m " +
+                                "JOIN FETCH o.delivery d " +
+                                "JOIN FETCH o.orderItems oi " +
+                                "JOIN FETCH oi.item i", Order.class
+                )
 //                .setFirstResult(0)
 //                .setMaxResults(100)
                 .getResultList();
@@ -156,16 +191,17 @@ public class OrderRepository {
 
     /**
      * V3.1 - 페이징 최적화를 위한 첫번째 메소드
+     *
      * @param offset
      * @param limit
      * @return List<Order>
      */
     public List<Order> findAllWithMemberAndDelivery(int offset, int limit) {
         return entityManager.createQuery(
-                "SELECT o FROM Order o " +
-                        "JOIN FETCH o.member m " +
-                        "JOIN FETCH o.delivery d", Order.class
-        )
+                        "SELECT o FROM Order o " +
+                                "JOIN FETCH o.member m " +
+                                "JOIN FETCH o.delivery d", Order.class
+                )
                 .setFirstResult(offset)
                 .setMaxResults(limit)
                 .getResultList();

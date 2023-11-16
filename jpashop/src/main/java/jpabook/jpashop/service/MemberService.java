@@ -48,12 +48,12 @@ public class MemberService {
 
     /* 회원 단건 조회 */
     public Member findOne(Long id) {
-        return memberRepository.findOne(id);
+        return memberRepository.findById(id).get();
     }
 
     @Transactional
     public void update(Long id, String name){
-        Member member = memberRepository.findOne(id); //영속상태
+        Member member = memberRepository.findById(id).get(); //영속상태
         member.setName(name); //변경감지(Dirty Check) 발생하고, @Transactional에 의해서 트랜잭션 관련 AOP가 끝나면 JPA가 commit/flush 처리
     }
 }

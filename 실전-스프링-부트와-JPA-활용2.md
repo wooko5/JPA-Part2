@@ -972,4 +972,127 @@
        - 서비스의 실시간 API는 OSIV를 끄고
        - ADMIN 처럼 커넥션을 많이 사용하지 않는 곳에 서는 OSIV를 켬
 
-6. 정리
+6. 소개
+
+   - [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
+
+     - 쓰는 이유
+
+       - 미친 듯한 생산성
+       - 공통적으로 많이 쓰는 SQL문이 이미 만들어져 있음
+
+     - 구현체를 Spring bean이 injection 해야하지 않나?
+
+       - 구현체를 Spring Data JPA의 API가 알아서 다 만들어서 주입함
+
+     - TIP
+
+       - ```
+         스프링 데이터 JPA는 스프링과 JPA를 활용해서 애플리케이션을 만들때 정말 편리한 기능을 많이 제공한다. 단순히 편리함을 넘어서 때로는 마법을 부리는 것 같을 정도로 놀라운 개발 생산성의 세계로 우리를 이끌어 준다.
+         
+         하지만 스프링 데이터 JPA는 JPA를 사용해서 이런 기능을 제공할 뿐이다. 결국 JPA 자체를 잘 이해하는 것이 가장 중요하다
+         ```
+
+     - TODO
+
+       - 원문 자료를 읽고,  JPA 책 완독하기
+
+   - [QueryDsl](http://querydsl.com/)
+
+     - 쓰는 이유
+
+       - 직관적인 문법
+       - 컴파일 시점에 빠른 문법 오류 발견
+       - 코드 자동완성
+       - 코드 재사용(결국 QueryDsl는 자바임)
+       - JPQL new 명령어와는 비교가 안될 정도로 깔끔한 DTO 조회를 지원
+
+     - build.gradle 코드
+
+       - ```groovy
+         //querydsl 추가
+         buildscript {
+             dependencies {
+                 classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:1.0.10")
+             }
+         }
+         
+         plugins {
+             id 'java'
+             id 'org.springframework.boot' version '2.7.13'
+             id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+         }
+         
+         group = 'jpabook'
+         version = '0.0.1-SNAPSHOT'
+         sourceCompatibility = '11'
+         
+         //apply plugin: 'io.spring.dependency-management'
+         apply plugin: "com.ewerk.gradle.plugins.querydsl"
+         
+         configurations {
+             compileOnly {
+                 extendsFrom annotationProcessor
+             }
+         }
+         
+         repositories {
+             mavenCentral()
+         }
+         
+         dependencies {
+             implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+             implementation 'org.springframework.boot:spring-boot-starter-validation'
+             implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+             implementation 'org.springframework.boot:spring-boot-starter-web'
+             implementation 'org.springframework.boot:spring-boot-devtools'
+             implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
+         // implementation 'org.hibernate:hibernate-core:5.4.13.Final'
+         
+             implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
+         
+             compileOnly 'org.projectlombok:lombok'
+             runtimeOnly 'com.h2database:h2'
+         
+             annotationProcessor 'org.projectlombok:lombok'
+             testImplementation 'org.springframework.boot:spring-boot-starter-test'
+             //추가
+             testImplementation("org.junit.vintage:junit-vintage-engine") {
+                 exclude group: "org.hamcrest", module: "hamcrest-core"
+             }
+         
+             //querydsl 추가
+             implementation 'com.querydsl:querydsl-jpa'
+             //querydsl 추가
+             implementation 'com.querydsl:querydsl-apt'
+         }
+         
+         
+         //querydsl 추가
+         //def querydslDir = 'src/main/generated'
+         def querydslDir = "$buildDir/generated/querydsl"
+         
+         querydsl {
+             library = "com.querydsl:querydsl-apt"
+             jpa = true
+             querydslSourcesDir = querydslDir
+         }
+         
+         sourceSets {
+             main {
+                 java {
+                     srcDirs = ['src/main/java', querydslDir]
+                 }
+             }
+         }
+         
+         compileQuerydsl{
+             options.annotationProcessorPath = configurations.querydsl
+         }
+         
+         configurations {
+             querydsl.extendsFrom compileClasspath
+         }
+         ```
+
+         
