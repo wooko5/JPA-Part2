@@ -1063,15 +1063,15 @@
        - ```groovy
          //querydsl 추가
          buildscript {
-             dependencies {
-                 classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:1.0.10")
-             }
+         	dependencies {
+         		classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:1.0.10")
+         	}
          }
          
          plugins {
-             id 'java'
-             id 'org.springframework.boot' version '2.7.13'
-             id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+         	id 'java'
+         	id 'org.springframework.boot' version '2.7.13'
+         	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
          }
          
          group = 'jpabook'
@@ -1082,67 +1082,67 @@
          apply plugin: "com.ewerk.gradle.plugins.querydsl"
          
          configurations {
-             compileOnly {
-                 extendsFrom annotationProcessor
-             }
+         	compileOnly {
+         		extendsFrom annotationProcessor
+         	}
          }
          
          repositories {
-             mavenCentral()
+         	mavenCentral()
          }
          
          dependencies {
-             implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-             implementation 'org.springframework.boot:spring-boot-starter-validation'
-             implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-             implementation 'org.springframework.boot:spring-boot-starter-web'
-             implementation 'org.springframework.boot:spring-boot-devtools'
-             implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
+         	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+         	implementation 'org.springframework.boot:spring-boot-starter-validation'
+         	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+         	implementation 'org.springframework.boot:spring-boot-starter-web'
+         	implementation 'org.springframework.boot:spring-boot-devtools'
+         	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
          // implementation 'org.hibernate:hibernate-core:5.4.13.Final'
          
-             implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
+         	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
          
-             compileOnly 'org.projectlombok:lombok'
-             runtimeOnly 'com.h2database:h2'
+         	compileOnly 'org.projectlombok:lombok'
+         	runtimeOnly 'com.h2database:h2'
          
-             annotationProcessor 'org.projectlombok:lombok'
-             testImplementation 'org.springframework.boot:spring-boot-starter-test'
-             //추가
-             testImplementation("org.junit.vintage:junit-vintage-engine") {
-                 exclude group: "org.hamcrest", module: "hamcrest-core"
-             }
+         	annotationProcessor 'org.projectlombok:lombok'
+         	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+         	//추가
+         	testImplementation("org.junit.vintage:junit-vintage-engine") {
+         		exclude group: "org.hamcrest", module: "hamcrest-core"
+         	}
          
-             //querydsl 추가
-             implementation 'com.querydsl:querydsl-jpa'
-             //querydsl 추가
-             implementation 'com.querydsl:querydsl-apt'
+         	//querydsl 추가
+         	implementation 'com.querydsl:querydsl-jpa'
+         	//querydsl 추가
+         	implementation 'com.querydsl:querydsl-apt'
          }
          
          
          //querydsl 추가
-         //def querydslDir = 'src/main/generated'
-         def querydslDir = "$buildDir/generated/querydsl"
+         def querydslDir = 'src/main/generated/querydsl'
+         //def querydslDir = "$buildDir/generated/querydsl"
          
          querydsl {
-             library = "com.querydsl:querydsl-apt"
-             jpa = true
-             querydslSourcesDir = querydslDir
+         	library = "com.querydsl:querydsl-apt"
+         	jpa = true
+         	querydslSourcesDir = querydslDir
          }
          
          sourceSets {
-             main {
-                 java {
-                     srcDirs = ['src/main/java', querydslDir]
-                 }
-             }
+         	main {
+         		java {
+         			srcDirs = ['src/main/java', querydslDir]
+         		}
+         	}
          }
          
          compileQuerydsl{
-             options.annotationProcessorPath = configurations.querydsl
+         	options.annotationProcessorPath = configurations.querydsl
          }
          
          configurations {
-             querydsl.extendsFrom compileClasspath
+         	querydsl.extendsFrom compileClasspath
          }
          ```
      
