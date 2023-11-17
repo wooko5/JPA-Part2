@@ -1007,8 +1007,59 @@
        - 코드 재사용(결국 QueryDsl는 자바임)
        - JPQL new 명령어와는 비교가 안될 정도로 깔끔한 DTO 조회를 지원
 
-     - build.gradle 코드
+     - 원래 build.gradle 코드
 
+       - ```groovy
+         plugins {
+         	id 'java'
+         	id 'org.springframework.boot' version '2.7.13'
+         	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+         }
+         
+         group = 'jpabook'
+         version = '0.0.1-SNAPSHOT'
+         
+         java {
+         	sourceCompatibility = '11'
+         }
+         
+         configurations {
+         	compileOnly {
+         		extendsFrom annotationProcessor
+         	}
+         }
+         
+         repositories {
+         	mavenCentral()
+         }
+         
+         dependencies {
+         	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+         	implementation 'org.springframework.boot:spring-boot-starter-validation'
+         	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+         	implementation 'org.springframework.boot:spring-boot-starter-web'
+         	implementation 'org.springframework.boot:spring-boot-devtools'
+         	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
+         	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
+         	implementation 'org.springframework.boot:spring-boot-starter-web'
+         	compileOnly 'org.projectlombok:lombok'
+         	runtimeOnly 'com.h2database:h2'
+         	annotationProcessor 'org.projectlombok:lombok'
+         	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+         	//JUnit4 추가
+         	testImplementation("org.junit.vintage:junit-vintage-engine") {
+         		exclude group: "org.hamcrest", module: "hamcrest-core"
+         	}
+         }
+         
+         tasks.named('test') {
+         	useJUnitPlatform()
+         }
+         
+         ```
+     
+     - 새로운 build.gradle 코드
+     
        - ```groovy
          //querydsl 추가
          buildscript {
@@ -1094,5 +1145,7 @@
              querydsl.extendsFrom compileClasspath
          }
          ```
-
-         
+     
+     - compileQuerydsl을 더블클릭하면 generated 폴더에 Q가 붙은 엔티티들이 생김
+     
+       - ![image-20231117100948769](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20231117100948769.png)
