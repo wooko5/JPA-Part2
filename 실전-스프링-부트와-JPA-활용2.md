@@ -1147,5 +1147,5 @@
          ```
      
      - compileQuerydsl을 더블클릭하면 generated 폴더에 Q가 붙은 엔티티들이 생김
-     
-       - ![image-20231117100948769](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20231117100948769.png)
+       - ![image](https://github.com/wooko5/JPA-Part2/assets/58154633/b817dd52-6405-49e7-857f-1ac448cb3c33)
+
