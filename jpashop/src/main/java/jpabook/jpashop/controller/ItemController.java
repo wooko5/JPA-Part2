@@ -4,6 +4,8 @@ import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
 import jpabook.jpashop.domain.item.ItemType;
 import jpabook.jpashop.service.ItemService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -41,7 +44,10 @@ public class ItemController {
     @GetMapping("/items")
     public String list(Model model) {
         List<Item> items = itemService.findItems();
-        model.addAttribute("items", items);
+        List<ItemResponseDto> collections = items.stream()
+                .map(item -> new ItemResponseDto(item.getId(), item.getName(), item.getPrice(), item.getStockQuantity()))
+                .collect(Collectors.toList());
+        model.addAttribute("items", collections);
         return "items/itemList";
     }
 
@@ -75,5 +81,14 @@ public class ItemController {
         itemTypes.add(new ItemType("MOVIE", "영화"));
         itemTypes.add(new ItemType("ALBUM", "앨범"));
         return itemTypes;
+    }
+
+    @Data
+    @AllArgsConstructor
+    private static class ItemResponseDto{
+        private Long id;
+        private String name;
+        private int price;
+        private int stockQuantity;
     }
 }
