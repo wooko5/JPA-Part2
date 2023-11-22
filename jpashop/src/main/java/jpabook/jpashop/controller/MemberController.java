@@ -3,6 +3,8 @@ package jpabook.jpashop.controller;
 import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.service.MemberService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -50,9 +53,21 @@ public class MemberController {
          * 화면에서는 엔티티를 사용해도 괜찮지만, API에서는 절대 엔티티를 그대로 반환해서는 안 된다.
          * 왜냐하면 API는 명세이기 때문에 엔티티의 속성을 추가하면 문서에 또 작성해야 하고, 비밀번호 같은 속성이 추가되면 보안적인 이유도 존재한다.
          * 그래서 교육이니깐! 단순하게 엔티티인 Member를 반환했지만, DTO를 사용해서 정말 필요한 데이터만 있는 객체를 활용하자
+         * ==> DTO 변환완료
          */
         List<Member> members = memberService.findMembers();
-        model.addAttribute("members", members);
+        List<MemberResponseDto> collections = members.stream()
+                .map(member -> new MemberResponseDto(member.getId(), member.getName(), member.getAddress()))
+                .collect(Collectors.toList());
+        model.addAttribute("members", collections);
         return "members/memberList";
+    }
+
+    @Data
+    @AllArgsConstructor
+    private static class MemberResponseDto{
+        private Long id;
+        private String name;
+        private Address address;
     }
 }

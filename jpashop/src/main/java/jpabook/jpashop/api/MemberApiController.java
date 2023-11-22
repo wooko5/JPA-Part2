@@ -106,7 +106,7 @@ public class MemberApiController {
 
     @Data
     @AllArgsConstructor
-    static class MemberDto {
+    private static class MemberDto {
         private String name;
         private Address address;
     }
