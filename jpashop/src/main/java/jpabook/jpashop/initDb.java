@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
 
 /**
  * 초기 샘플데이터를 입력하기 위한 클래스

@@ -2,7 +2,7 @@ package jpabook.jpashop.domain;
 
 import lombok.Getter;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 /**
  * @Embeddable는 해당 클래스(엔티티)가 내장 클래스(엔티티)임을 명시한다

@@ -1,5 +1,7 @@
 package jpabook.jpashop.api;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jpabook.jpashop.common.Result;
 import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Member;
@@ -10,8 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.stream.Collectors;
 

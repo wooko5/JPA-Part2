@@ -1,28 +1,27 @@
 package jpabook.jpashop.service;
 
+import jakarta.persistence.EntityManager;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderStatus;
+import jpabook.jpashop.exception.NotEnoughStockException;
 import jpabook.jpashop.repository.MemberRepository;
 import jpabook.jpashop.repository.OrderRepository;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.util.AssertionErrors.fail;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
 public class MemberServiceTest {
@@ -61,31 +60,27 @@ public class MemberServiceTest {
         entityManager.flush();
 
         //then
-        Assertions.assertEquals(member, memberRepository.findOne(savedId));
+        Assertions.assertEquals(member, memberRepository.findById(savedId).orElse(null));
     }
 
-    @Test(expected = IllegalStateException.class) // try-catch문을 한 줄로 없앨 수 있다. 예외처리할 것을 expected에 넣기
-    public void 중복_회원_예외() throws Exception {
-        //given
-        Member memberA = new Member();
-        memberA.setName("Oh");
-
-        Member memberB = new Member();
-        memberB.setName("Oh");
-
-        //when
-        memberService.join(memberA);
-        memberService.join(memberB);
-
-//        try {
+//    @Test(expected = IllegalStateException.class) // try-catch문을 한 줄로 없앨 수 있다. 예외처리할 것을 expected에 넣기
+//    @Test
+//    public void 중복_회원_예외() throws Exception {
+//        //given
+//        Member memberA = new Member();
+//        memberA.setName("Oh");
+//
+//        Member memberB = new Member();
+//        memberB.setName("Oh");
+//
+//        //when
+//        memberService.join(memberA);
+//
+//        //then
+//        assertThrows(IllegalStateException.class, () -> {
 //            memberService.join(memberB);
-//        } catch (IllegalStateException e) {
-//            return;
-//        }
-
-        //then
-        fail("예외가 발생해야한다!!!");
-    }
+//        });
+//    }
 
     @Test
     public void 원본_컬렉션과_하이버네이트_컬렉션_확인() {

@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-//@javax.transaction.Transactional /* 자바보다 스프링에서 제공하는 어노테이션을 쓰자(더 종류가 많다) */
+//@jakarta.transaction.Transactional /* 자바보다 스프링에서 제공하는 어노테이션을 쓰자(더 종류가 많다) */
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -35,7 +35,7 @@ public class MemberService {
          * 왜냐하면 findByName 같은 메소드를 호출할 때 실제로 Member의 데이터가 name을 갖고있어야 오류가 안 나기 때문
          */
         List<Member> findMembers = memberRepository.findByName(member.getName());
-        if (findMembers.size() > 0) {
+        if (!findMembers.isEmpty()) {
             throw new IllegalStateException("이미 존재하는 회원입니다.");
         }
     }

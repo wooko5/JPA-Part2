@@ -8,19 +8,16 @@ import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
 import jpabook.jpashop.exception.NotEnoughStockException;
 import jpabook.jpashop.repository.OrderRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
 public class OrderServiceTest {
@@ -46,24 +43,23 @@ public class OrderServiceTest {
 
         //then
         Order foundOrder = orderRepository.findOne(orderId);
-        assertEquals("상품 주문시 상태는 ORDER", OrderStatus.ORDER, foundOrder.getStatus()); // (메시지, 예상값, 실제값)
-        assertEquals("주문한 상품 종류 수가 정확해야 한다.", 1, foundOrder.getOrderItems().size());
-        assertEquals("주문 가격은 가격 * 수량이다", 40000 * orderCount, foundOrder.getTotalPrice());
-        assertEquals("주문 수량만큼 재고가 줄어야한다", 8, book.getStockQuantity()); // 10개 책 상품 중에 2개를 구매해서 8개 재고
+        assertEquals(OrderStatus.ORDER, foundOrder.getStatus(), "상품 주문시 상태는 ORDER"); // (예상값, 실제값, 메시지)
+        assertEquals(1, foundOrder.getOrderItems().size(), "주문한 상품 종류 수가 정확해야 한다.");
+        assertEquals(40000 * orderCount, foundOrder.getTotalPrice(), "주문 가격은 가격 * 수량이다");
+        assertEquals(8, book.getStockQuantity(), "주문 수량만큼 재고가 줄어야한다"); // 10개 책 상품 중에 2개를 구매해서 8개 재고
     }
 
-    @Test(expected = NotEnoughStockException.class)
+    @Test // 스프링부트3.0이상으로 전환되면서 기존의 예외처리 테스트도 바뀜
     public void 상품주문_재고수량초과() throws Exception {
         //given
         Member member = createMember();
         Item book = createBook("반지의제왕", 40000, 10);
         int orderCount = 20;
 
-        //when
-        orderService.order(member.getId(), book.getId(), orderCount);
-
-        //then
-        fail("재고 수량 예외가 발생해야 한다.");
+        //when, then
+        assertThrows(NotEnoughStockException.class, () -> {
+            orderService.order(member.getId(), book.getId(), orderCount);
+        });
     }
 
 
@@ -80,8 +76,8 @@ public class OrderServiceTest {
 
         //then
         Order foundOrder = orderRepository.findOne(orderId);
-        assertEquals("주문 취소 시 상태는 CANCLE이다.", OrderStatus.CANCLE, foundOrder.getStatus());
-        assertEquals("주문이 취소된 상품은 그만큼 재고가 증가해야한다.", 10, book.getStockQuantity());
+        assertEquals(OrderStatus.CANCLE, foundOrder.getStatus(),"주문 취소 시 상태는 CANCLE이다.");
+        assertEquals( 10, book.getStockQuantity(), "주문이 취소된 상품은 그만큼 재고가 증가해야한다.");
     }
 
     @Test
