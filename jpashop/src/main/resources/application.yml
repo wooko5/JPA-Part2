@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/jpashop
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create # create 은 서버가 시작되면 모든 table을 삭제하고 다시 생성, none은 기존에 있었던 table 정보를 유지
+    properties:
+      hibernate:
+#        show_sql: true
+        format_sql: true
+        default_batch_fetch_size: 100
+#    open-in-view: false
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+#    org.hibernate.type: trace
